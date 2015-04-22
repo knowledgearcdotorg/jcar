@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="component" version="3.3" method="upgrade">
+    <name>com_jcar</name>
+    <creationDate>2009-09-17</creationDate>
+    <author>KnowledgeArc Ltd</author>
+    <authorEmail>development@knowledgearc.com</authorEmail>
+    <authorUrl>http://www.knowledgearc.org</authorUrl>
+    <copyright>>Copyright (C) 2009-2015 KnowledgeARC Ltd. All rights reserved.</copyright>
+    <license>http://www.gnu.org/licenses/gpl-3.0.html</license>
+    <version>0.3.0</version>
+    <description>COM_JCAR_XML_DESCRIPTION</description>
+    <files folder="site">
+        <folder>helpers</folder>
+        <folder>models</folder>
+        <folder>views</folder>
+        <filename>controller.php</filename>
+        <filename>jcar.php</filename>
+        <filename>router.php</filename>
+    </files>
+
+    <languages folder="site">
+        <language tag="en-GB">language/en-GB/en-GB.com_jcar.ini</language>
+    </languages>
+
+    <administration>
+        <menu img="class:jcar">JCAR</menu>
+        <submenu>
+            <menu
+                link="option=com_jcar"
+                view="cpanel" img="class:jcar"
+                alt="JCar/CPanel">com_jcar_cpanel</menu>
+        </submenu>
+
+        <files folder="admin">
+            <folder>controllers</folder>
+            <folder>helpers</folder>
+            <folder>models</folder>
+            <folder>views</folder>
+            <filename>access.xml</filename>
+            <filename>config.xml</filename>
+            <filename>controller.php</filename>
+            <filename>jcar.php</filename>
+        </files>
+
+        <languages folder="admin">
+            <language tag="en-GB">language/en-GB/en-GB.com_jcar.ini</language>
+            <language tag="en-GB">language/en-GB/en-GB.com_jcar.sys.ini</language>
+        </languages>
+    </administration>
+
+    <params>
+    </params>
+</extension>
