@@ -35,8 +35,6 @@ class JCarRouter extends JComponentRouterBase
             $menuItem = $menu->getItem($itemId);
         }
 
-        $mView = JArrayHelper::getValue($menuItem->query, 'view');
-
         if ($view = JArrayHelper::getValue($query, 'view')) {
             if (!$itemId || empty($menuItem) || $menuItem->component != 'com_jcar') {
                 $segments[] = $view;
@@ -89,14 +87,14 @@ class JCarRouter extends JComponentRouterBase
  */
 function JCarBuildRoute(&$query)
 {
-    $router = new JSpaceRouter;
+    $router = new JCarRouter;
 
     return $router->build($query);
 }
 
 function JCarParseRoute($segments)
 {
-    $router = new JSpaceRouter;
+    $router = new JCarRouter;
 
     return $router->parse($segments);
 }
