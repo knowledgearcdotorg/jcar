@@ -5,4 +5,19 @@
             <![CDATA[COM_JCAR_ITEM_VIEW_DEFAULT_DESC]]>
         </message>
     </layout>
+
+    <fields name="request">
+        <fieldset
+            name="request"
+            addfieldpath="administrator/components/com_jcar/models/fields">
+            <field
+                name="id"
+                type="text"
+                label="COM_JCAR_FIELD_SELECT_ID_LABEL"
+                required="true"
+                edit="true"
+                clear="false"
+                description="COM_JCAR_FIELD_SELECT_ID_DESC"/>
+        </fieldset>
+    </fields>
 </metadata>

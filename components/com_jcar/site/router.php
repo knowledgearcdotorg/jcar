@@ -60,7 +60,9 @@ class JCarRouter extends JComponentRouterBase
      */
     public function parse(&$segments)
     {
+    var_dump($segments);
         $vars = array();
+        $vars['view'] = array_pop($segments);
 
         $total = count($segments);
 
@@ -68,11 +70,10 @@ class JCarRouter extends JComponentRouterBase
 
         if (isset($item)) {
             $vars['view'] = JArrayHelper::getValue($item->query, 'view');
-        } else {
-            $vars['view'] = JArrayHelper::getValue($segments, 0);
         }
 
-        $vars['id'] = JArrayHelper::getValue($segments, $total-1);
+        // get the left over segments to create an id (including handles).
+        $vars['id'] = implode('/', $segments);
 
         return $vars;
     }

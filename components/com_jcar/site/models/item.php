@@ -19,21 +19,29 @@ class JCarModelItem extends JModelItem
     {
         $app = JFactory::getApplication('site');
 
-        $pk = $app->input->getInt('id');
+        $pk = $app->input->getString('id');
         $this->setState('item.id', $pk);
     }
 
     public function getItem($pk = null)
     {
-        $pk = (!empty($pk)) ? $pk : (int)$this->getState('item.id');
+        $pk = (!empty($pk)) ? $pk : $this->getState('item.id');
 
         if ($this->item === null) {
             $this->item = array();
         }
 
         if (!JArrayHelper::getValue($this->item, $pk)) {
+            $parts = explode(":", $pk, 2);
+
+            $plugin = null;
+
+            if (count($parts) == 2) {
+                $plugin = JArrayHelper::getValue($parts, 0);
+            }
+
             $dispatcher = JEventDispatcher::getInstance();
-            JPluginHelper::importPlugin('jcar');
+            JPluginHelper::importPlugin('jcar', $plugin);
 
             // Trigger the data preparation event.
             $responses = $dispatcher->trigger('onJCarItemAfterRetrieve', array($pk));

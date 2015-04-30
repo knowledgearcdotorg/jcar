@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension version="3.3" type="plugin" group="jcar" method="upgrade">
+    <name>plg_jcar_oai</name>
+    <author>KnowledgeArc</author>
+    <creationDate>2015/04/29</creationDate>
+    <copyright>Copyright (C) 2015 KnowledgeArc Ltd. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>development@knowledgearc.com</authorEmail>
+    <authorUrl>www.knowledgearc.org</authorUrl>
+    <version>0.1.0</version>
+    <description>PLG_JCAR_OAI_XML_DESCRIPTION</description>
+
+    <files>
+        <filename plugin="oai">oai.php</filename>
+    </files>
+
+    <languages>
+        <language tag="en-GB">language/en-GB/en-GB.plg_jcar_oai.ini</language>
+        <language tag="en-GB">language/en-GB/en-GB.plg_jcar_oai.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                    name="oai_url"
+                    type="text"
+                    label="PLG_JCAR_OAI_REQUEST_URL_LABEL"
+                    description="PLG_JCAR_OAI_REQUEST_URL_DESC"/>
+
+                <field
+                    name="ore_enabled"
+                    type="radio"
+                    class="btn-group btn-group-yesno"
+                    default="1"
+                    label="PLG_JCAR_OAI_REQUEST_ORE_LABEL"
+                    description="PLG_JCAR_OAI_REQUEST_ORE_DESC">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

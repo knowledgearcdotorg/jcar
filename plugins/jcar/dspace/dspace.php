@@ -21,6 +21,12 @@ class PlgJCarDSpace extends JPlugin
      */
     public function onJCarItemAfterRetrieve($id)
     {
+        $parts = explode(":", $id, 2);
+
+        if (count($parts) == 2) {
+            $id = JArrayHelper::getValue($parts, 1);
+        }
+
         return $this->getItem($id);
     }
 
