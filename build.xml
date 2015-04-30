@@ -60,6 +60,7 @@
                 <delete includeemptydirs="false">
                     <fileset dir="${path.components}/${directory}" includes="**/*"/>
                     <fileset dir="${path.administrator.components}/${directory}" includes="**/*"/>
+                    <fileset dir="${path.media}/${directory}" includes="**/*"/>
                 </delete>
 
                 <copy todir="${path.components}/${directory}">
@@ -98,6 +99,18 @@
                         <copy todir="${path.cli}">
                             <fileset dir="./components/${directory}/admin/cli">
                                 <include name="*"/>
+                            </fileset>
+                        </copy>
+                    </then>
+                </if>
+
+                <if>
+                    <available file='${src}/components/${directory}/media' type='dir'/>
+                    <then>
+                        <mkdir dir="${path.media}/${directory}"/>
+                        <copy todir="${path.media}/${directory}">
+                            <fileset dir="./components/${directory}/media/">
+                                <include name="**/**"/>
                             </fileset>
                         </copy>
                     </then>
