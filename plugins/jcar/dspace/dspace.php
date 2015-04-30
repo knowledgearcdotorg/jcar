@@ -12,6 +12,14 @@ defined('_JEXEC') or die;
  */
 class PlgJCarDSpace extends JPlugin
 {
+    public function __construct(&$subject, $config)
+    {
+        $this->autoloadLanguage = true;
+        parent::__construct($subject, $config);
+
+        JLog::addLogger(array());
+    }
+
     /**
      * Gets an item from a REST API-enabled DSpace archive.
      *
@@ -66,7 +74,8 @@ class PlgJCarDSpace extends JPlugin
 
             return $data;
         } else {
-            throw new Exception("An error has occurred.", $response->code);
+            JLog::add($response->body, \JLog::ERROR, 'jcardspace');
+            throw new Exception(JText::_('PLG_JCAR_DSPACE_ERROR_'.$response->code), $response->code);
         }
     }
 
@@ -87,7 +96,8 @@ class PlgJCarDSpace extends JPlugin
 
             return $data;
         } else {
-            throw new Exception("An error has occurred.", $response->code);
+            JLog::add($response->body, \JLog::ERROR, 'jcardspace');
+            throw new Exception(JText::_('PLG_JCAR_DSPACE_ERROR_'.$response->code), $response->code);
         }
     }
 }
