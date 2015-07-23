@@ -8,6 +8,8 @@
  */
 defined('_JEXEC') or die;
 
+JLoader::register('JCarHelper', JPATH_ROOT.'/administrator/components/com_jcar/helpers/jcar.php');
+
 /**
  * Displays a control panel containing various JCar information.
  */
@@ -21,7 +23,7 @@ class JCarViewCPanel extends JViewLegacy
         $this->option = JFactory::getApplication()->input->getCmd('option');
         $this->item = $this->get('Item');
 
-        JSpaceHelper::addSubmenu('cpanel');
+        JCarHelper::addSubmenu('cpanel');
         $this->addToolbar();
         $this->sidebar = JHtmlSidebar::render();
 
