@@ -12,10 +12,10 @@
     <property   name="path.libs"                     value="${path.joomla}/libraries"/>
     <property   name="path.cli"                      value="${path.joomla}/cli"/>
     <property   name="package.dest"                  value="${src}/build"/>
-    <property   name="joomla.extension.types"        value="components,libraries,modules,plugins"/>
+    <property   name="extension"                     value="components,libraries,modules,plugins"/>
 
     <target name="deploy" description="Updates existing extensions in a Joomla! site.">
-        <foreach list="${joomla.extension.types}" param="extension" target="deploy_extensions"/>
+        <foreach list="${extensions}" param="extension" target="deploy_extensions"/>
     </target>
 
     <target name="deploy_extensions" hidden="true">
@@ -263,7 +263,7 @@
 
     <target name="package" description="Packages extensions ready for installation into Joomla!.">
         <mkdir dir="${package.dest}"/>
-        <foreach list="${joomla.extension.types}" param="extension" target="package_extensions"/>
+        <foreach list="${extensions}" param="extension" target="package_extensions"/>
     </target>
 
     <target name="package_extensions" hidden="true">
