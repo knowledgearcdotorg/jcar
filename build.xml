@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="JSpace" default="update" basedir=".">
+<project name="JCar" default="update" basedir=".">
     <property   file="build.properties"/>
     <property   name="path.administrator"            value="${path.joomla}/administrator"/>
     <property   name="path.administrator.components" value="${path.administrator}/components"/>
@@ -12,7 +12,7 @@
     <property   name="path.libs"                     value="${path.joomla}/libraries"/>
     <property   name="path.cli"                      value="${path.joomla}/cli"/>
     <property   name="package.dest"                  value="${src}/build"/>
-    <property   name="extension"                     value="components,libraries,modules,plugins"/>
+    <property   name="extensions"                    value="components,libraries,modules,plugins"/>
 
     <target name="deploy" description="Updates existing extensions in a Joomla! site.">
         <foreach list="${extensions}" param="extension" target="deploy_extensions"/>
@@ -224,7 +224,7 @@
                 <fileset dir="tests/unit/suites/libraries/JSpace/Metadata">
                     <include name="*Test.php"/>
                 </fileset>
-                <fileset dir="tests/unit/suites/plugins/jspace">
+                <fileset dir="tests/unit/suites/plugins/${id}">
                     <include name="harvest/*Test.php"/>
                     <include name="localstore/*Test.php"/>
                     <include name="weblinks/*Test.php"/>
@@ -238,18 +238,18 @@
 
     <target name="deploy_test_data">
         <delete includeemptydirs="false">
-            <fileset dir="${path.joomla}/../jspace" includes="**/*"/>
+            <fileset dir="${path.joomla}/../${id}" includes="**/*"/>
         </delete>
 
-        <copy todir="${path.joomla}/../jspace">
+        <copy todir="${path.joomla}/../${id}">
             <fileset dir="tests/unit/stubs">
                 <include name="**/**"/>
             </fileset>
         </copy>
 
         <move
-            file="${path.joomla}/../jspace/opensearch/htaccess.txt"
-            tofile="${path.joomla}/../jspace/opensearch/.htaccess"/>
+            file="${path.joomla}/../${id}/opensearch/htaccess.txt"
+            tofile="${path.joomla}/../${id}/opensearch/.htaccess"/>
     </target>
 
     <target name="cpd" description="Check for copying and pasting.">
@@ -317,6 +317,46 @@
     </target>
 
     <target name="help" description="Help documentation for this build file.">
-        <echo message="Help documentation."/>
+        <echo message="JCar for Joomla!"/>
+        <echo message="Targets:"/>
+
+        <echo message="cpd          Check for copy/paste code duplication."/>
+
+        <echo message=""/>
+
+        <echo message="deploy       Copy extension code to an existing Joomla"/>
+        <echo message="             installation as defined by the dest"/>
+        <echo message="             parameter in your build.properties file."/>
+
+        <echo message=""/>
+
+        <echo message="package      Packages all extensions for installation"/>
+        <echo message="             via the Joomla Extension Manager."/>
+
+        <echo message=""/>
+
+        <echo message="test         Run the unit tests."/>
+
+        <echo message=""/>
+
+        <echo message="Additional Flags:"/>
+
+        <echo message=""/>
+
+        <echo message="extensions   Specify one or more extension types to"/>
+        <echo message="             target when calling deploy or package."/>
+        <echo message="             Available options are:"/>
+        <echo message="             - components"/>
+        <echo message="             - libraries"/>
+        <echo message="             - modules"/>
+        <echo message="             - plugins"/>
+
+
+        <echo message="Examples:"/>
+
+        <echo message=""/>
+
+        <echo message="phing deploy -Dextensions=plugins"/>
+        <echo message="phing package -Dextensions=components"/>
     </target>
 </project>
