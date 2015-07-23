@@ -23,31 +23,47 @@ class JCarRouter extends JComponentRouterBase
     public function build(&$query)
     {
         $segments = array();
+        
+        $view = JArrayHelper::getValue($query, 'view');
+        $id = JArrayHelper::getValue($query, 'id');
 
         // Get a menu item based on Itemid or currently active
         $app = JFactory::getApplication();
         $menu = $app->getMenu();
 
-        // We need a menu item.  Either the one specified in the query, or the current active one if none specified
         if ($itemId = JArrayHelper::getValue($query, 'Itemid')) {
             $menuItem = $menu->getActive();
         } else {
             $menuItem = $menu->getItem($itemId);
         }
 
-        if ($view = JArrayHelper::getValue($query, 'view')) {
+        $mView = JArrayHelper::getValue($menuItem->query, 'view', null);
+        $mId = JArrayHelper::getValue($menuItem->query, 'id', null);
+
+        if ($view) {
             if (!$itemId || empty($menuItem) || $menuItem->component != 'com_jcar') {
                 $segments[] = $view;
             }
+            
+            unset($query['view']);
+        }
 
-            if ($id = JArrayHelper::getValue($query, 'id')) {
+        if ($view && ($mView == $view) && ($id) && ($mId == $id)) {
+            unset($query['view']);
+            unset($query['catid']);
+            unset($query['id']);
+
+            return $segments;
+        }
+        
+        if ($mId != $id || $mView != $view) {
+            if ($view == 'item') {
                 $segments[] = $id;
             }
 
-            unset($query['view']);
             unset($query['id']);
         }
-
+        
         return $segments;
     }
 
@@ -60,16 +76,14 @@ class JCarRouter extends JComponentRouterBase
      */
     public function parse(&$segments)
     {
-    var_dump($segments);
         $vars = array();
-        $vars['view'] = array_pop($segments);
-
-        $total = count($segments);
 
         $item = $this->menu->getActive();
 
         if (isset($item)) {
             $vars['view'] = JArrayHelper::getValue($item->query, 'view');
+        } else {
+            $vars['view'] = array_shift($segments);
         }
 
         // get the left over segments to create an id (including handles).
