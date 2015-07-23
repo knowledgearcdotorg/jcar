@@ -47,8 +47,13 @@ class PlgJCarDSpace extends JPlugin
      */
     private function getItem($id)
     {
+        $url = $this->params->get('rest_url').'/items/'.$id.'.json';
+
+        JLog::add($url, JLog::DEBUG, 'jcardspace');
+
         $http = JHttpFactory::getHttp();
-        $response = $http->get($this->params->get('rest_url').'/items/'.$id.'.json');
+
+        $response = $http->get($url);
 
         if ($response->code === 200) {
             $data = json_decode($response->body);
@@ -74,7 +79,7 @@ class PlgJCarDSpace extends JPlugin
 
             return $data;
         } else {
-            JLog::add($response->body, \JLog::ERROR, 'jcardspace');
+            JLog::add($response->body, JLog::ERROR, 'jcardspace');
             throw new Exception(JText::_('PLG_JCAR_DSPACE_ERROR_'.$response->code), $response->code);
         }
     }
@@ -88,8 +93,11 @@ class PlgJCarDSpace extends JPlugin
      */
     private function getBundles($item)
     {
+        $url = $this->params->get('rest_url').'/items/'.$item.'/bundles.json';
+        JLog::add($url, JLog::DEBUG, 'jcardspace');
+
         $http = JHttpFactory::getHttp();
-        $response = $http->get($this->params->get('rest_url').'/items/'.$item.'/bundles.json');
+        $response = $http->get($url);
 
         if ($response->code === 200) {
             $data = json_decode($response->body);
