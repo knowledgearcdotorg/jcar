@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="JCar" default="update" basedir=".">
+<project name="JCar" default="help" basedir=".">
     <property   file="build.properties"/>
     <property   name="path.administrator"            value="${path.joomla}/administrator"/>
     <property   name="path.administrator.components" value="${path.administrator}/components"/>
