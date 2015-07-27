@@ -23,7 +23,7 @@ class JCarRouter extends JComponentRouterBase
     public function build(&$query)
     {
         $segments = array();
-        
+
         $view = JArrayHelper::getValue($query, 'view');
         $id = JArrayHelper::getValue($query, 'id');
 
@@ -41,10 +41,13 @@ class JCarRouter extends JComponentRouterBase
         $mId = JArrayHelper::getValue($menuItem->query, 'id', null);
 
         if ($view) {
-            if (!$itemId || empty($menuItem) || $menuItem->component != 'com_jcar') {
+            if (!$itemId ||
+                empty($menuItem) ||
+                empty($menuItem->component) ||
+                $menuItem->component != 'com_jcar') {
                 $segments[] = $view;
             }
-            
+
             unset($query['view']);
         }
 
@@ -55,15 +58,15 @@ class JCarRouter extends JComponentRouterBase
 
             return $segments;
         }
-        
+
         if ($mId != $id || $mView != $view) {
-            if ($view == 'item') {
+            if ($view == 'category' || $view == 'item') {
                 $segments[] = $id;
             }
 
             unset($query['id']);
         }
-        
+
         return $segments;
     }
 

@@ -15,6 +15,28 @@ abstract class JCarHelperRoute
 {
     protected static $lookup = array();
 
+    public static function getCategoryRoute($id, $language = 0)
+    {
+        $needles = array('category'=>array((int)$id));
+
+        // Create the link
+        $url = new JUri('index.php');
+        $url->setVar('option', 'com_jcar');
+        $url->setVar('view', 'category');
+        $url->setVar('id', $id);
+
+        if ($language && $language != "*" && JLanguageMultilang::isEnabled()) {
+            $url->setVar('lang', $language);
+            $needles['language'] = $language;
+        }
+
+        if ($item = self::findItem($needles)) {
+            $url->setVar('Itemid', $item);
+        }
+
+        return (string)$url;
+    }
+
     public static function getItemRoute($id, $language = 0)
     {
         $needles = array('item'=>array((int)$id));
@@ -96,7 +118,11 @@ abstract class JCarHelperRoute
         // Check if the active menuitem matches the requested language
         $active = $menus->getActive();
 
-        if ($active && $active->component == 'com_jspace' && ($language == '*' || in_array($active->language, array('*', $language)) || !JLanguageMultilang::isEnabled())) {
+        if ($active &&
+            $active->component == 'com_jspace' &&
+                ($language == '*' ||
+                in_array($active->language, array('*', $language)) ||
+                !JLanguageMultilang::isEnabled())) {
             return $active->id;
         }
 

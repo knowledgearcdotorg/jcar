@@ -42,7 +42,8 @@ class PlgJCarDSpace extends JPlugin
     {
         $categories = null;
 
-        $url = $this->params->get('rest_url').'/communities.json?collections=true';
+        $endpoint = '/communities.json?collections=true';
+        $url = $this->params->get('rest_url').$endpoint;
 
         JLog::add($url, JLog::DEBUG, 'jcardspace');
 
@@ -54,25 +55,45 @@ class PlgJCarDSpace extends JPlugin
             $data = json_decode($response->body);
 
             foreach ($data->communities as $community) {
-                $categories = $this->populateCategory($community, $categories);
+                $categories[] = $this->parseCategory($community);
             }
         }
 
         return $categories;
     }
 
-    public function onCategoryRetrieve()
+    public function onCategoryRetrieve($id)
     {
+        $categories = null;
 
-    }
+        $endpoint = '/communities/'.(int)$id.'/.json?collections=true';
+        $url = $this->params->get('rest_url').$endpoint;
 
-    private function populateCategory($current, $tree)
-    {
-        if (!is_array($tree)) {
-            $tree = array();
+        JLog::add($url, JLog::DEBUG, 'jcardspace');
+
+        $http = JHttpFactory::getHttp();
+
+        $response = $http->get($url);
+
+        if ($response->code === 200) {
+            $data = json_decode($response->body);
+            $category = $this->parseCategory($data);
         }
 
-        foreach ($current->collections as $collection) {
+        return $categories;
+    }
+
+    private function parseCategory($category)
+    {
+        $category->children = array();
+
+        $subCommunities = $category->subCommunities;
+
+        foreach ($subCommunities as $subCommunity) {
+            $category->children[] = $this->parseCategory($subCommunity);
+        }
+
+        foreach ($category->collections as $collection) {
             $endpoint = '/collections/'.$collection->id.'/items/count.json';
             $url = $this->params->get('rest_url').$endpoint;
 
@@ -85,26 +106,18 @@ class PlgJCarDSpace extends JPlugin
                 $collection->count = $data;
             }
 
-            if (!isset($current->children)) {
-                $current->children = array();
-            }
+            $collection->description = $collection->shortDescription;
+            $collection->introduction = $collection->introductoryText;
+            $collection->copyright = $collection->copyrightText;
 
-            $current->children[$collection->id] = $collection;
+            $category->children[] = $collection;
         }
 
-        if (!$current->parentCommunity) {
-            $tree[$current->id] = $current;
-        } else if (array_key_exists($current->parentCommunity->id, $tree)) {
-            if (!$tree[$current->parentCommunity->id]->children) {
-                $tree[$current->parentCommunity->id]->children = array();
-            }
+        $category->description = $category->shortDescription;
+        $category->introduction = $category->introductoryText;
+        $category->copyright = $category->copyrightText;
 
-            $tree[$current->parentCommunity->id]->children[$current->id] = $current;
-        } else {
-            $tree = $this->populateCategory($current, $tree[$current->parentCommunity->id]);
-        }
-
-        return $tree;
+        return $category;
     }
 
     /**
