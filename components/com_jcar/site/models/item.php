@@ -17,6 +17,8 @@ class JCarModelItem extends JModelItem
 
     protected function populateState()
     {
+        parent::populateState();
+
         $app = JFactory::getApplication('site');
 
         $pk = $app->input->getString('id');

@@ -37,5 +37,5 @@ JLoader::register(
             <?php endforeach; ?>
         </dl>
     </dd>
-<?php endforeach; ?>
+    <?php endforeach; ?>
 </dl>
