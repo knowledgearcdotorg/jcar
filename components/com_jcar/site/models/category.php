@@ -9,9 +9,9 @@
 defined('_JEXEC') or die;
 
 /**
- * Models an item from an archive.
+ * Models an category from an archive.
  */
-class JCarModelItem extends JModelItem
+class JCarModelCategory extends JModelItem
 {
     protected $item;
 
@@ -22,12 +22,12 @@ class JCarModelItem extends JModelItem
         $app = JFactory::getApplication();
 
         $pk = $app->input->getString('id');
-        $this->setState('item.id', $pk);
+        $this->setState('category.id', $pk);
     }
 
     public function getItem($pk = null)
     {
-        $pk = (!empty($pk)) ? $pk : $this->getState('item.id');
+        $pk = (!empty($pk)) ? $pk : $this->getState('category.id');
 
         if ($this->item === null) {
             $this->item = array();
@@ -46,7 +46,7 @@ class JCarModelItem extends JModelItem
             JPluginHelper::importPlugin('jcar', $plugin);
 
             // Trigger the data preparation event.
-            $responses = $dispatcher->trigger('onJCarItemAfterRetrieve', array($pk));
+            $responses = $dispatcher->trigger('onJCarCategoryRetrieve', array($pk));
 
             // loop through responses until we find a valid one.
             $valid = false;

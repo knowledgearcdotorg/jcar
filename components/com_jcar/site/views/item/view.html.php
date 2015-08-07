@@ -16,7 +16,7 @@ class JCarViewItem extends JViewLegacy
     protected $item;
 
     /**
-     * Diplay an item.
+     * Display an item.
      *
      * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
      *

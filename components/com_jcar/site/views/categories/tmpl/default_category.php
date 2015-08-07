@@ -11,13 +11,13 @@ defined('_JEXEC') or die;
 <ul>
     <?php
     foreach ($this->items as $key=>$value) :
+        $count = isset($value->count) ? ' ('.$value->count.')' : '';
     ?>
 
     <li>
         <a href="<?php echo JCarHelperRoute::getCategoryRoute($value->id); ?>">
             <?php echo $value->name; ?>
-        </a>
-        <?php echo isset($value->count) ? '&nbsp;('.$value->count.')' : ''; ?>
+        </a><?php echo $count; ?>
 
         <?php
         if (isset($value->children)) :

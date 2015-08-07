@@ -25,26 +25,33 @@ class JCarRouter extends JComponentRouterBase
         $segments = array();
 
         $view = JArrayHelper::getValue($query, 'view');
+        $layout = JArrayHelper::getValue($query, 'layout');
         $id = JArrayHelper::getValue($query, 'id');
 
         // Get a menu item based on Itemid or currently active
         $app = JFactory::getApplication();
-        $menu = $app->getMenu();
 
         if ($itemId = JArrayHelper::getValue($query, 'Itemid')) {
-            $menuItem = $menu->getActive();
+            $menuItem = $this->menu->getItem($itemId);
         } else {
-            $menuItem = $menu->getItem($itemId);
+            $menuItem = $this->menu->getActive();
         }
 
         $mView = JArrayHelper::getValue($menuItem->query, 'view', null);
+        $mLayout = JArrayHelper::getValue($menuItem->query, 'layout', null);
         $mId = JArrayHelper::getValue($menuItem->query, 'id', null);
+
+        // remove template name from layout.
+        if (count($parts = explode(':', $mLayout)) == 2) {
+            $mLayout = JArrayHelper::getValue($parts, 1);
+        }
 
         if ($view) {
             if (!$itemId ||
                 empty($menuItem) ||
                 empty($menuItem->component) ||
-                $menuItem->component != 'com_jcar') {
+                $menuItem->component != 'com_jcar' ||
+                $layout != $mLayout) {
                 $segments[] = $view;
             }
 
@@ -53,18 +60,26 @@ class JCarRouter extends JComponentRouterBase
 
         if ($view && ($mView == $view) && ($id) && ($mId == $id)) {
             unset($query['view']);
-            unset($query['catid']);
             unset($query['id']);
 
             return $segments;
         }
 
         if ($mId != $id || $mView != $view) {
-            if ($view == 'category' || $view == 'item') {
-                $segments[] = $id;
-            }
-
+            $segments[] = $id;
             unset($query['id']);
+        }
+
+        if ($layout) {
+            if ($itemId && $mLayout) {
+                if ($layout == $mLayout) {
+                    unset($query['layout']);
+                }
+            } else {
+                if ($mLayout == 'default') {
+                    unset($query['layout']);
+                }
+            }
         }
 
         return $segments;
@@ -85,12 +100,12 @@ class JCarRouter extends JComponentRouterBase
 
         if (isset($item)) {
             $vars['view'] = JArrayHelper::getValue($item->query, 'view');
+            $vars['id'] = JArrayHelper::getValue($item->query, 'id');
         } else {
             $vars['view'] = array_shift($segments);
+            // get the left over segments to create an id (including handles).
+            $vars['id'] = implode('/', $segments);
         }
-
-        // get the left over segments to create an id (including handles).
-        $vars['id'] = implode('/', $segments);
 
         return $vars;
     }

@@ -23,9 +23,10 @@ class PlgJCarDSpace extends JPlugin
     /**
      * Gets an item from a REST API-enabled DSpace archive.
      *
-     * @param  int    $id  The id of an item to retrieve from the DSpace archive.
-     *
-     * @param  mixed  An item from the REST API-enabled DSpace archive, or null if nothing could be found.
+     * @param  int    $id  The id of an item to retrieve from the DSpace
+     * archive.
+     * @param  mixed  An item from the REST API-enabled DSpace archive, or
+     * null if nothing could be found.
      */
     public function onJCarItemAfterRetrieve($id)
     {
@@ -38,11 +39,52 @@ class PlgJCarDSpace extends JPlugin
         return $this->getItem($id);
     }
 
-    public function onJCarCategoriesRetrieve()
+    /**
+     * A DSpace-specific trigger for returning communities, sub-communities
+     * and collections as a tree structure.
+     *
+     * @return  A list of communities, sub-communities and collections as a
+     * tree structure.
+     */
+    public function onJCarCommunitiesRetrieve()
     {
-        $categories = null;
+        $communities = array();
 
         $endpoint = '/communities.json?collections=true';
+        $url = new JUri($this->params->get('rest_url').$endpoint);
+
+        JLog::add($url, JLog::DEBUG, 'jcardspace');
+
+        $http = JHttpFactory::getHttp();
+
+        $response = $http->get((string)$url);
+
+        if ($response->code === 200) {
+            $data = json_decode($response->body);
+            $communities = $data->communities;
+
+            for ($i = 0; $i < count($communities); $i++) {
+                $communities[$i] = $this->parseCommunity($communities[$i]);
+            }
+        } else {
+            JLog::add($response->code, JLog::ERROR, 'jcardspace');
+        }
+
+        return $communities;
+    }
+
+    /**
+     * A DSpace-specific trigger for returning a community and its
+     * sub-communities and collections as a tree structure.
+     *
+     * @return  A community and its sub-communities and collections as a tree
+     * structure.
+     */
+    public function onJCarCommunityRetrieve($id)
+    {
+        $community = null;
+
+        $endpoint = '/communities/'.(int)$id.'.json?collections=true';
         $url = $this->params->get('rest_url').$endpoint;
 
         JLog::add($url, JLog::DEBUG, 'jcardspace');
@@ -52,72 +94,137 @@ class PlgJCarDSpace extends JPlugin
         $response = $http->get($url);
 
         if ($response->code === 200) {
-            $data = json_decode($response->body);
-
-            foreach ($data->communities as $community) {
-                $categories[] = $this->parseCategory($community);
-            }
+            $community = json_decode($response->body);
+            $community = $this->parseCommunity($community);
+        } else {
+            JLog::add($response->code, JLog::ERROR, 'jcardspace');
         }
 
-        return $categories;
+        return $community;
     }
 
-    public function onCategoryRetrieve($id)
+    /**
+     * Gets a list of DSpace collections as generic JCar categories.
+     *
+     * @return  A list of DSpace collections as generic JCar categories.
+     */
+    public function onJCarCategoriesRetrieve()
     {
-        $categories = null;
+        $categories = array();
 
-        $endpoint = '/communities/'.(int)$id.'/.json?collections=true';
-        $url = $this->params->get('rest_url').$endpoint;
+        $endpoint = '/collections.json';
+        $url = new JUri($this->params->get('rest_url').$endpoint);
 
-        JLog::add($url, JLog::DEBUG, 'jcardspace');
+        JLog::add((string)$url, JLog::DEBUG, 'jcardspace');
 
         $http = JHttpFactory::getHttp();
 
-        $response = $http->get($url);
+        $response = $http->get((string)$url);
 
         if ($response->code === 200) {
             $data = json_decode($response->body);
-            $category = $this->parseCategory($data);
+            $collections = $data->collections;
+
+            foreach ($collections as $collection) {
+                $categories[] = $this->parseCollection($collection);
+            }
+        } else {
+            JLog::add($response->code, JLog::ERROR, 'jcardspace');
         }
 
         return $categories;
     }
 
-    private function parseCategory($category)
+    public function onJCarCategoryRetrieve($id)
     {
-        $category->children = array();
+        $category = null;
 
-        $subCommunities = $category->subCommunities;
+        $endpoint = '/collections/'.$id.'.json';
+        $url = new JUri($this->params->get('rest_url').$endpoint);
 
-        foreach ($subCommunities as $subCommunity) {
-            $category->children[] = $this->parseCategory($subCommunity);
+        JLog::add((string)$url, JLog::DEBUG, 'jcardspace');
+
+        $http = JHttpFactory::getHttp();
+
+        $response = $http->get((string)$url);
+
+        if ($response->code === 200) {
+            $data = json_decode($response->body);
+
+            $category = $this->parseCollection($data);
+        } else {
+            JLog::add($response->code, JLog::ERROR, 'jcardspace');
         }
 
-        foreach ($category->collections as $collection) {
-            $endpoint = '/collections/'.$collection->id.'/items/count.json';
-            $url = $this->params->get('rest_url').$endpoint;
+        return $category;
+    }
 
-            $http = JHttpFactory::getHttp();
+    /**
+     * Parses a DSpace community, adding additional content to the community
+     * object.
+     *
+     * @param   stdClass  $community  The community to parse.
+     *
+     * @return  stdClass  A DSpace community with additional content.
+     */
+    private function parseCommunity($community)
+    {
+        $community->description = $community->shortDescription;
+        $community->introduction = $community->introductoryText;
+        $community->copyright = $community->copyrightText;
 
-            $response = $http->get($url);
+        for ($i = 0; $i < count($community->subCommunities); $i++) {
+            $subCommunity = JArrayHelper($community->subCommunities, $i);
+            $subCommunity = $this->parseCommunity($subCommunity);
 
-            if ($response->code === 200) {
-                $data = json_decode($response->body);
-                $collection->count = $data;
-            }
+            $community->subCommunities[$i] = subCommunity;
+        }
+
+        for ($i = 0; $i < count($community->collections); $i++) {
+            $id = JArrayHelper::getValue($community->collections, $i);
+            $collection = $this->parseCollection($id);
 
             $collection->description = $collection->shortDescription;
             $collection->introduction = $collection->introductoryText;
             $collection->copyright = $collection->copyrightText;
 
-            $category->children[] = $collection;
+            $community->collections[$i] = $collection;
         }
 
-        $category->description = $category->shortDescription;
-        $category->introduction = $category->introductoryText;
-        $category->copyright = $category->copyrightText;
+        return $community;
+    }
 
-        return $category;
+    /**
+     * Parses a DSpace collection, adding additional content to the collection
+     * object.
+     *
+     * @param   stdClass  $collection  The collection to parse.
+     *
+     * @return  stdClass  A DSpace collection with additional content.
+     */
+    private function parseCollection($collection)
+    {
+        $endpoint = '/collections/'.$collection->id.'/items/count.json';
+        $url = new JUri($this->params->get('rest_url').$endpoint);
+
+        JLog::add((string)$url, JLog::DEBUG, 'jcardspace');
+
+        $http = JHttpFactory::getHttp();
+
+        $response = $http->get((string)$url);
+
+        if ($response->code === 200) {
+            $data = json_decode($response->body);
+            $collection->count = (int)$data;
+        } else {
+            JLog::add($response->code, JLog::ERROR, 'jcardspace');
+        }
+
+        $collection->description = $collection->shortDescription;
+        $collection->introduction = $collection->introductoryText;
+        $collection->copyright = $collection->copyrightText;
+
+        return $collection;
     }
 
     /**

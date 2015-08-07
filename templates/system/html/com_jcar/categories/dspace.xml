@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+    <layout
+        title="COM_JCAR_CATEGORIES_VIEW_DSPACE_COMMUNITIES_TITLE"
+        option="COM_JCAR_CATEGORIES_VIEW_DSPACE_COMMUNITIES_OPTION">
+        <message>
+            <![CDATA[COM_JCAR_CATEGORIES_VIEW_DSPACE_COMMUNITIES_DESC]]>
+        </message>
+    </layout>
+</metadata>

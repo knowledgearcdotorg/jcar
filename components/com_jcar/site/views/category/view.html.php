@@ -9,14 +9,14 @@
 defined('_JEXEC') or die;
 
 /**
- * Displays all available categories from an archive.
+ * Displays a category and all its sub-categories from an archive.
  */
-class JCarViewCategories extends JViewLegacy
+class JCarViewCategory extends JViewLegacy
 {
-    protected $items;
+    protected $item;
 
     /**
-     * Display all available categories.
+     * Diplay a category and all its sub-categories.
      *
      * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
      *
@@ -24,7 +24,7 @@ class JCarViewCategories extends JViewLegacy
      */
     public function display($tpl = null)
     {
-        $this->items = $this->get('Items');
+        $this->item = $this->get('Item');
 
         return parent::display($tpl);
     }
