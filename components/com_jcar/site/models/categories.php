@@ -9,21 +9,11 @@
 defined('_JEXEC') or die;
 
 /**
- * Models an item from an archive.
+ * Models all categories from an archive.
  */
 class JCarModelCategories extends JModelList
 {
     protected $items;
-
-    protected function populateState($ordering = null, $direction = null)
-    {
-        parent::populateState($ordering, $direction);
-
-        $app = JFactory::getApplication('site');
-
-        $pk = $app->input->getString('id');
-        $this->setState('item.id', $pk);
-    }
 
     public function getItems()
     {
