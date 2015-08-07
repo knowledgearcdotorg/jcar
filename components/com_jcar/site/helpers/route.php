@@ -119,7 +119,7 @@ abstract class JCarHelperRoute
         $active = $menus->getActive();
 
         if ($active &&
-            $active->component == 'com_jspace' &&
+            $active->component == 'com_jcar' &&
                 ($language == '*' ||
                 in_array($active->language, array('*', $language)) ||
                 !JLanguageMultilang::isEnabled())) {
