@@ -46,7 +46,7 @@ class JCarModelItem extends JModelItem
             JPluginHelper::importPlugin('jcar', $plugin);
 
             // Trigger the data preparation event.
-            $responses = $dispatcher->trigger('onJCarItemAfterRetrieve', array($pk));
+            $responses = $dispatcher->trigger('onJCarItemRetrieve', array($pk));
 
             // loop through responses until we find a valid one.
             $valid = false;

@@ -19,7 +19,7 @@ class PlgJCarOai extends JPlugin
      *
      * @param  mixed  An item from the REST API-enabled DSpace archive, or null if nothing could be found.
      */
-    public function onJCarItemAfterRetrieve($id)
+    public function onJCarItemRetrieve($id)
     {
         return $this->getItem($id);
     }

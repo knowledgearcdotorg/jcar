@@ -28,7 +28,7 @@ class PlgJCarDSpace extends JPlugin
      * @param  mixed  An item from the REST API-enabled DSpace archive, or
      * null if nothing could be found.
      */
-    public function onJCarItemAfterRetrieve($id)
+    public function onJCarItemRetrieve($id)
     {
         $parts = explode(":", $id, 2);
 
