@@ -1,7 +1,6 @@
 <?php
 /**
  * @package     JCar.Plugin
- *
  * @copyright   Copyright (C) 2015 KnowledgeArc Ltd. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
@@ -13,11 +12,51 @@ defined('_JEXEC') or die;
 class PlgJCarOai extends JPlugin
 {
     /**
+     * Gets a list of OAI sets as generic JCar categories.
+     *
+     * @return  A list of OAI sets as generic JCar categories.
+     */
+    public function onJCarCategoriesRetrieve()
+    {
+        $categories = array();
+
+        $url = new JUri($this->params->get('oai_url'));
+
+        $query = array("verb"=>"ListSets");
+
+        $url->setQuery($query);
+
+        $http = JHttpFactory::getHttp();
+
+        $response = $http->get((string)$url);
+
+        if ($response->code === 200) {
+            $data = new SimpleXmlElement($response->body);
+
+            $sets = iterator_to_array($data->ListSets->set, 0);
+
+            foreach ($sets as $set) {
+                $category = new stdClass();
+
+                $category->id = (string)$set->setSpec;
+                $category->name = (string)$set->setName;
+
+                $categories[] = $category;
+            }
+        } else {
+            JLog::add($response->code, JLog::ERROR, 'jcardspace');
+        }
+
+        return $categories;
+    }
+
+    /**
      * Gets an item from a REST API-enabled DSpace archive.
      *
-     * @param  int    $id  The id of an item to retrieve from the DSpace archive.
-     *
-     * @param  mixed  An item from the REST API-enabled DSpace archive, or null if nothing could be found.
+     * @param  int    $id  The id of an item to retrieve from the DSpace
+     * archive.
+     * @param  mixed  An item from the REST API-enabled DSpace archive, or
+     * null if nothing could be found.
      */
     public function onJCarItemRetrieve($id)
     {
@@ -27,9 +66,10 @@ class PlgJCarOai extends JPlugin
     /**
      * Gets an item from the REST API-enabled DSpace archive.
      *
-     * @param  int    $id  The id of an item to retrieve from the DSpace archive.
-     *
-     * @param  mixed  An item from the REST API-enabled DSpace archive, or null if nothing could be found.
+     * @param  int    $id  The id of an item to retrieve from the DSpace
+     * archive.
+     * @param  mixed  An item from the REST API-enabled DSpace archive, or
+     * null if nothing could be found.
      */
     private function getItem($id)
     {
@@ -39,9 +79,11 @@ class PlgJCarOai extends JPlugin
             "verb"=>"GetRecord",
             "metadataPrefix"=>"oai_dc",
             "identifier"=>$id);
+
         $url->setQuery($query);
 
         $http = JHttpFactory::getHttp();
+
         $response = $http->get((string)$url);
 
         $data = null;
@@ -50,11 +92,13 @@ class PlgJCarOai extends JPlugin
             $xml = new SimpleXMLElement($response->body);
 
             $metadata = array();
+
             $namespaces = $xml->getDocNamespaces(true);
 
             foreach ($namespaces as $prefix=>$namespace) {
                 if ($prefix) {
                     $xml->registerXPathNamespace($prefix, $namespace);
+
                     $tags = $xml->xpath('//'.$prefix.':*');
 
                     foreach ($tags as $tag) {
@@ -76,7 +120,9 @@ class PlgJCarOai extends JPlugin
             }
 
             $data = new stdClass();
+
             $data->metadata = $metadata;
+
             $data->bundles = array();
 
             if ($this->params->get('ore_enabled', 1)) {
@@ -90,11 +136,14 @@ class PlgJCarOai extends JPlugin
     }
 
     /**
-     * Gets bundle information for the specified item from the REST API-enabled DSpace archive.
+     * Gets bundle information for the specified item from the REST
+     * API-enabled DSpace archive.
      *
-     * @param  int    $item  The item id of the bundles to retrieve from the DSpace archive.
+     * @param  int    $item  The item id of the bundles to retrieve from the
+     * DSpace archive.
      *
-     * @param  array  Bundle information for the specified item from the REST API-enabled DSpace archive.
+     * @param  array  Bundle information for the specified item from the REST
+     * API-enabled DSpace archive.
      */
     private function getBundles($item)
     {
@@ -114,25 +163,34 @@ class PlgJCarOai extends JPlugin
         if ($response->code === 200) {
             $xml = new SimpleXMLElement($response->body);
 
-            $xml->registerXPathNamespace('default', 'http://www.openarchives.org/OAI/2.0/');
-            $xml->registerXPathNamespace('atom', 'http://www.w3.org/2005/Atom');
-            $xml->registerXPathNamespace('oreatom', 'http://www.openarchives.org/ore/atom/');
-            $xml->registerXPathNamespace('rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#');
-            $xml->registerXPathNamespace('dcterms', 'http://purl.org/dc/terms/');
+            $default = 'http://www.openarchives.org/OAI/2.0/';
+            $atom = 'http://www.w3.org/2005/Atom';
+            $oreatom = 'http://www.openarchives.org/ore/atom/';
+            $rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
+            $dcterms = 'http://purl.org/dc/terms/';
 
-            $links = $xml->xpath('//atom:link[@rel="http://www.openarchives.org/ore/terms/aggregates"]');
+            $xml->registerXPathNamespace('default', $default);
+            $xml->registerXPathNamespace('atom', $atom);
+            $xml->registerXPathNamespace('oreatom', $oreatom);
+            $xml->registerXPathNamespace('rdf', $rdf);
+            $xml->registerXPathNamespace('dcterms', $dcterms);
+
+            $aggregates = '//atom:link'.
+                '[@rel="http://www.openarchives.org/ore/terms/aggregates"]';
+
+            $links = $xml->xpath($aggregates);
 
             foreach ($links as $link) {
-                $attributes = array();
+                $attrs = array();
 
                 foreach($link->attributes() as $key=>$value){
-                    $attributes[$key] = trim($value);
+                    $attrs[$key] = trim($value);
                 }
 
-                $href = JArrayHelper::getvalue($attributes, 'href', null, 'string');
-                $name = JArrayHelper::getValue($attributes, 'title', null, 'string');
-                $type = JArrayHelper::getValue($attributes, 'type', null, 'string');
-                $size = JArrayHelper::getValue($attributes, 'length', null, 'int');
+                $href = JArrayHelper::getValue($attrs, 'href', null, 'string');
+                $name = JArrayHelper::getValue($attrs, 'title', null, 'string');
+                $type = JArrayHelper::getValue($attrs, 'type', null, 'string');
+                $size = JArrayHelper::getValue($attrs, 'length', null, 'int');
 
                 $bitstream = new stdClass();
                 $bitstream->url = urldecode($href);
@@ -141,8 +199,17 @@ class PlgJCarOai extends JPlugin
                 $bitstream->size = $size;
                 $bitstream->formatDescription = $type;
 
-                $derivatives = $xml->xpath('//oreatom:triples/rdf:Description[@rdf:about="'.$bitstream->url.'"]/dcterms:description');
-                $derivative = strtolower(JArrayHelper::getValue($derivatives, 0, 'original', 'string'));
+                $description =
+                    '//oreatom:triples/rdf:Description[@rdf:about="'.
+                    $bitstream->url.'"]/dcterms:description';
+
+                $derivatives = $xml->xpath($description);
+                $derivative = strtolower(
+                    JArrayHelper::getValue(
+                        $derivatives,
+                        0,
+                        'original',
+                        'string'));
 
                 if (!array_key_exists($derivative, $data)) {
                     $data[$derivative] = new stdClass();
