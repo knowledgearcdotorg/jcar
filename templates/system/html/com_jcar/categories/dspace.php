@@ -16,7 +16,7 @@ JPluginHelper::importPlugin('jcar', "dspace");
 
 // Trigger the data preparation event.
 $response = $dispatcher->trigger('onJCarCommunitiesRetrieve');
-$response = JArrayHelper::getValue($response, 0);
+$response = JArrayHelper::getValue($response, 0, array());
 
 $this->communities = $response;
 

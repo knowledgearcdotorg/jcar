@@ -18,7 +18,7 @@ JPluginHelper::importPlugin('jcar', "dspace");
 
 // Trigger the data preparation event.
 $response = $dispatcher->trigger('onJCarCommunityRetrieve', $id);
-$this->community = JArrayHelper::getValue($response, 0);
+$this->community = JArrayHelper::getValue($response, 0, array());
 ?>
 <section id="jcarCategory">
     <header>
