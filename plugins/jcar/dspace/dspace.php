@@ -135,6 +135,15 @@ class PlgJCarDSpace extends JPlugin
         return $categories;
     }
 
+    /**
+     * Gets a DSpace collection's information, the items within the
+     * category and paging information to allow for browsing across the entire
+     * recordset.
+     *
+     * @return  A DSpace collection's information, the items within the
+     * category and paging informatoin to allow for browsing across the entire
+     * recordset.
+     */
     public function onJCarCategoryRetrieve($id)
     {
         $category = null;
@@ -244,7 +253,8 @@ class PlgJCarDSpace extends JPlugin
 
         $items = array();
 
-        $url = $this->params->get('rest_url').'/collections/'.$cid.'/items.json';
+        $url = $this->params->get('rest_url');
+        $url .= '/collections/'.$cid.'/items.json';
 
         $url = new JUri($url);
 

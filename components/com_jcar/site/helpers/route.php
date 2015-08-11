@@ -17,7 +17,7 @@ abstract class JCarHelperRoute
 
     public static function getCategoryRoute($id, $language = 0)
     {
-        $needles = array('category'=>array((int)$id));
+        $needles = array('category'=>array((string)$id));
 
         // Create the link
         $url = new JUri('index.php');
@@ -39,7 +39,7 @@ abstract class JCarHelperRoute
 
     public static function getItemRoute($id, $language = 0)
     {
-        $needles = array('item'=>array((int)$id));
+        $needles = array('item'=>array((string)$id));
 
         // Create the link
         $url = new JUri('index.php');
