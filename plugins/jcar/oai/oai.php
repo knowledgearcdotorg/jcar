@@ -70,6 +70,11 @@ class PlgJCarOai extends JPlugin
     {
         $category = new stdClass();
 
+        $app = JFactory::getApplication();
+
+        $this->set('set', $app->input->getString('id'));
+        $this->set('token', $app->input->getString('token', null));
+
         $category->id = $id;
         $category->name = "";
         $category->description = "";
@@ -92,65 +97,42 @@ class PlgJCarOai extends JPlugin
         return $this->getItem($id);
     }
 
-    private function getItems($set)
+    private function getItems()
     {
         $items = array();
 
-        $url = new JUri($this->params->get('oai_url'));
+        $xml = $this->getRecordList();
 
-        $query = array(
-            "verb"=>"ListRecords",
-            "metadataPrefix"=>"oai_dc",
-            "set"=>$set);
+        $records = iterator_to_array($xml->ListRecords->record, 0);
 
-        $url->setQuery($query);
+        foreach ($records as $record) {
+            $item = new stdClass();
 
-        JLog::add((string)$url, JLog::DEBUG, 'jcardspace');
+            $item->id = (string)$record->header->identifier;
 
-        $http = JHttpFactory::getHttp();
+            $metadata = iterator_to_array($record->metadata, 0);
 
-        $response = $http->get((string)$url);
+            foreach ($metadata as $field) {
+                $namespaces = $field->getDocNamespaces(true);
 
-        if ($response->code === 200) {
-            $xml = new SimpleXMLElement($response->body);
+                foreach ($namespaces as $prefix=>$namespace) {
+                    if ($prefix) {
+                        $field->registerXPathNamespace($prefix, $namespace);
 
-            $records = iterator_to_array($xml->ListRecords->record, 0);
+                        $tags = $field->xpath($prefix.':*/*');
 
-            foreach ($records as $record) {
-                $item = new stdClass();
-
-                $item->id = (string)$record->header->identifier;
-
-                $metadata = iterator_to_array($record->metadata, 0);
-
-                foreach ($metadata as $field) {
-                    $namespaces = $field->getDocNamespaces(true);
-
-                    foreach ($namespaces as $prefix=>$namespace) {
-                        if ($prefix) {
-                            $field->registerXPathNamespace($prefix, $namespace);
-
-                            $tags = $field->xpath($prefix.':*/*');
-
-                            foreach ($tags as $tag) {
-                                if (JString::trim((string)$tag)) {
-                                    if ((string)$tag->getName() == "title") {
-                                        $item->name = (string)$tag;
-                                    }
+                        foreach ($tags as $tag) {
+                            if (JString::trim((string)$tag)) {
+                                if ((string)$tag->getName() == "title") {
+                                    $item->name = (string)$tag;
                                 }
                             }
                         }
                     }
                 }
-
-                $items[] = $item;
             }
-        } else {
-            JLog::add($response->body, JLog::ERROR, 'jcardspace');
 
-            throw new Exception(
-                JText::_('PLG_JCAR_DSPACE_ERROR_'.$response->code),
-                $response->code);
+            $items[] = $item;
         }
 
         return $items;
@@ -158,7 +140,122 @@ class PlgJCarOai extends JPlugin
 
     private function getPagination()
     {
-        return new JPagination(10, 0, 10);
+        $app = JFactory::getApplication();
+
+        $count = $this->getItemsCount();
+        $start = $app->input->getInt('limitstart');
+
+        if ($this->getCursor() == 0) {
+            $app->setUserState('jcar.oai.limit', count($this->getItems()));
+        }
+
+        $limit = $app->getUserState('jcar.oai.limit', $count);
+
+        $pagination = new JPagination($count, $start, $limit);
+
+        $token = $this->getResumptionToken();
+
+        if ($token) {
+            $pagination->setAdditionalUrlParam("token", $token);
+        }
+
+        return $pagination;
+    }
+
+    private function getItemsCount()
+    {
+        $count = 0;
+
+        $xml = $this->getRecordList();
+
+        if ($xml) {
+            if (isset($xml->ListRecords->resumptionToken)) {
+                $resumptionToken = $xml->ListRecords->resumptionToken;
+
+                $count = (int)$resumptionToken['completeListSize'];
+            } else {
+                $count = (int)count($this->getItems());
+            }
+        }
+
+        return $count;
+    }
+
+    private function getCursor()
+    {
+        $cursor = 0;
+
+        $xml = $this->getRecordList();
+
+        if ($xml) {
+            if (isset($xml->ListRecords->resumptionToken)) {
+                $resumptionToken = $xml->ListRecords->resumptionToken;
+
+                $cursor = (int)$resumptionToken['cursor'];
+            }
+        }
+
+        return $cursor;
+    }
+
+    private function getResumptionToken()
+    {
+        $xml = $this->getRecordList();
+
+        if ($xml) {
+            if (isset($xml->ListRecords->resumptionToken)) {
+                return (string)$xml->ListRecords->resumptionToken;
+            }
+        }
+
+        return null;
+    }
+
+    private function getRecordList()
+    {
+        if (!$xml = $this->get('oai', array())) {
+            $set = $this->get('set');
+
+            $url = new JUri($this->params->get('oai_url'));
+
+            $url->setVar('verb', 'ListRecords');
+/*
+            $query = array(
+                "verb"=>"ListRecords",
+                "metadataPrefix"=>"oai_dc",
+                "set"=>$set);
+*/
+            $app = JFactory::getApplication();
+
+            $token = $this->get('token');
+
+            if ($token) {
+                $url->setVar('resumptionToken', $token);
+            } else {
+                $url->setVar('metadataPrefix', 'oai_dc');
+                //$url->setVar('set', $set);
+            }
+
+            JLog::add((string)$url, JLog::DEBUG, 'jcardspace');
+
+            $http = JHttpFactory::getHttp();
+
+            $response = $http->get((string)$url);
+
+            if ($response->code === 200) {
+                $xml = new SimpleXMLElement($response->body);
+
+                $this->set('oai', $xml);
+            } else {
+                JLog::add($response->body, JLog::ERROR, 'jcardspace');
+
+                throw new Exception(
+                    JText::_('PLG_JCAR_DSPACE_ERROR_'.$response->code),
+                    $response->code);
+            }
+        }
+
+        return $xml;
     }
 
     /**
