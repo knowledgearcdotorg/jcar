@@ -13,5 +13,27 @@ defined('_JEXEC') or die;
     <header>
         <h1><?php echo $this->item->name; ?></h1>
         <div><?php echo $this->item->description; ?></div>
+
+        <?php echo $this->item->pagination->getResultsCounter(); ?>
     </header>
+
+    <articles>
+
+        <?php foreach ($this->item->items as $item) : ?>
+
+        <h2>
+            <a href="<?php echo 'index.php?option=com_jcar&view=item&id='.$item->id; ?>">
+                <?php echo $item->name; ?></a></h2>
+
+        <?php endforeach; ?>
+
+    </articles>
+
+    <footer>
+
+        <div class="pagination">
+        <?php echo $this->item->pagination->getPagesLinks(); ?>
+        </div>
+
+    </footer>
 </section>

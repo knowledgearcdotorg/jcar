@@ -152,6 +152,8 @@ class PlgJCarDSpace extends JPlugin
             $data = json_decode($response->body);
 
             $category = $this->parseCollection($data);
+            $category->items = $this->getItems($category->id);
+            $category->pagination = $this->getPagination();
         } else {
             JLog::add($response->code, JLog::ERROR, 'jcardspace');
         }
@@ -228,11 +230,95 @@ class PlgJCarDSpace extends JPlugin
     }
 
     /**
+     * Gets a list of items based on a collection from the REST API-enabled
+     * DSpace archive.
+     *
+     * @param   int    $cid  The id of a collection.
+     *
+     * @return  mixed  An item from the REST API-enabled DSpace archive, or
+     * null if nothing could be found.
+     */
+    private function getItems($cid)
+    {
+        $pagination = $this->getPagination();
+
+        $items = array();
+
+        $url = $this->params->get('rest_url').'/collections/'.$cid.'/items.json';
+
+        $url = new JUri($url);
+
+        $url->setQuery(
+            array(
+                "start"=>$pagination->get('limitstart'),
+                "limit"=>$pagination->get('limit')));
+
+        JLog::add((string)$url, JLog::DEBUG, 'jcardspace');
+
+        $http = JHttpFactory::getHttp();
+
+        $response = $http->get((string)$url);
+
+        if ($response->code === 200) {
+            $items = json_decode($response->body);
+        } else {
+            JLog::add($response->body, JLog::ERROR, 'jcardspace');
+
+            throw new Exception(
+                JText::_('PLG_JCAR_DSPACE_ERROR_'.$response->code),
+                $response->code);
+        }
+
+        return $items;
+    }
+
+    private function getItemsCount($cid)
+    {
+        $url = $this->params->get('rest_url');
+        $url .= '/collections/'.$cid.'/items/count.json';
+
+        $url = new JUri($url);
+
+        JLog::add((string)$url, JLog::DEBUG, 'jcardspace');
+
+        $http = JHttpFactory::getHttp();
+
+        $response = $http->get((string)$url);
+
+        if ($response->code === 200) {
+            return (int)json_decode($response->body);
+        } else {
+            JLog::add($response->body, JLog::ERROR, 'jcardspace');
+
+            throw new Exception(
+                JText::_('PLG_JCAR_DSPACE_ERROR_'.$response->code),
+                $response->code);
+        }
+
+        return 0;
+    }
+
+    private function getPagination()
+    {
+        $app = JFactory::getApplication();
+
+        $total = $this->getItemsCount($app->input->getInt('id'));
+        $start = $app->input->getInt('limitstart', 0);
+        $limit = $app->input->getInt('limit', 20);
+
+        $pagination = new JPagination($total, $start, $limit);
+
+        return $pagination;
+    }
+
+    /**
      * Gets an item from the REST API-enabled DSpace archive.
      *
-     * @param  int    $id  The id of an item to retrieve from the DSpace archive.
+     * @param   int    $id  The id of an item to retrieve from the DSpace
+     * archive.
      *
-     * @param  mixed  An item from the REST API-enabled DSpace archive, or null if nothing could be found.
+     * @return  mixed  An item from the REST API-enabled DSpace archive, or
+     * null if nothing could be found.
      */
     private function getItem($id)
     {
