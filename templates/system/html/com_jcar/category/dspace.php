@@ -25,4 +25,14 @@ $this->community = JArrayHelper::getValue($response, 0, array());
         <h1><?php echo $this->community->name; ?></h1>
         <div><?php echo $this->community->description; ?></div>
     </header>
+
+    <?php
+    $this->communities = $this->community->subCommunities;
+
+    echo $this->loadTemplate('communities');
+
+    $this->collections = $this->community->collections;
+
+    echo $this->loadTemplate('collections');
+    ?>
 </section>
