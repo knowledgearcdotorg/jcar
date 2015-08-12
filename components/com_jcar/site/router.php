@@ -99,10 +99,22 @@ class JCarRouter extends JComponentRouterBase
         $item = $this->menu->getActive();
 
         if (isset($item)) {
-            $vars['view'] = JArrayHelper::getValue($item->query, 'view');
-            $vars['id'] = JArrayHelper::getValue($item->query, 'id');
+            $mView = JArrayHelper::getValue($item->query, 'view');
+            $mLayout = JArrayHelper::getValue($item->query, 'layout');
+
+            if ($mView == "categories") {
+                if (count($segments) == 1) {
+                    $vars['view'] = "category";
+                    $vars['layout'] = $mLayout;
+                } else {
+                    $vars['view'] = array_shift($segments);
+                }
+
+                $vars['id'] = array_shift($segments);
+            }
         } else {
             $vars['view'] = array_shift($segments);
+
             // get the left over segments to create an id (including handles).
             $vars['id'] = implode('/', $segments);
         }

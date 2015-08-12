@@ -61,6 +61,11 @@ class JCarModelItem extends JModelItem
 
                 next($responses);
             }
+
+            // if not found, fail loudly.
+            if (!$valid) {
+                throw new Exception("The item does not exist.", 404);
+            }
         }
 
         return JArrayHelper::getValue($this->item, $pk);
