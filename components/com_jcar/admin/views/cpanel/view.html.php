@@ -23,9 +23,7 @@ class JCarViewCPanel extends JViewLegacy
         $this->option = JFactory::getApplication()->input->getCmd('option');
         $this->item = $this->get('Item');
 
-        JCarHelper::addSubmenu('cpanel');
         $this->addToolbar();
-        $this->sidebar = JHtmlSidebar::render();
 
         parent::display($tpl);
     }

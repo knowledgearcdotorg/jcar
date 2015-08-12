@@ -24,11 +24,7 @@ class JCarHelper
      */
     public static function addSubmenu($vName)
     {
-        JHtmlSidebar::addEntry(
-            JText::_('COM_JSPACE_SUBMENU_CPANEL'),
-            'index.php?option=com_jspace',
-            $vName == 'cpanel'
-        );
+
     }
 
     /**

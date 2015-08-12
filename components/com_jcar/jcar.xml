@@ -24,12 +24,6 @@
 
     <administration>
         <menu img="class:jcar">JCAR</menu>
-        <submenu>
-            <menu
-                link="option=com_jcar"
-                view="cpanel" img="class:jcar"
-                alt="JCar/CPanel">com_jcar_cpanel</menu>
-        </submenu>
 
         <files folder="admin">
             <folder>controllers</folder>
