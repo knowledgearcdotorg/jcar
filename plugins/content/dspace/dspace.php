@@ -95,11 +95,7 @@ class PlgContentDSpace extends JPlugin
             JModelLegacy::addIncludePath(JPATH_ROOT.'/components/com_jcar/models');
             $model = JModelLegacy::getInstance('Item', 'JCarModel');
 
-            try {
-                $this->item = $model->getItem($id);
-            } catch (Exception $e) {
-                // fail silently.
-            }
+            $this->item = $model->getItem($id);
         }
 
         return $this->item;

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.3" type="plugin" group="editors-xtd" method="upgrade">
+    <name>plg_editors-xtd_jcar</name>
+    <creationDate>2015-08-13</creationDate>
+    <author>KnowledgeArc Ltd</author>
+    <authorEmail>development@knowledgearc.com</authorEmail>
+    <authorUrl>http://www.knowledgearc.org</authorUrl>
+    <copyright>>Copyright (C) 2015 KnowledgeArc Ltd. All rights reserved.</copyright>
+    <license>http://www.gnu.org/licenses/gpl-3.0.html</license>
+    <version>1.0.0-dev</version>
+    <description>PLG_EDITORS-XTD_JCAR_XML_DESCRIPTION</description>
+    <files>
+        <filename plugin="jcar">jcar.php</filename>
+    </files>
+    <languages>
+        <language tag="en-GB">language/en-GB/en-GB.plg_editors-xtd_jcar.ini</language>
+        <language tag="en-GB">language/en-GB/en-GB.plg_editors-xtd_jcar.sys.ini</language>
+    </languages>
+</extension>
