@@ -1,18 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
-    <fieldset
-        name="general"
-        label="COM_JCAR_FIELDSET_GENERAL_LABEL"
-        description="COM_JCAR_FIELDSET_GENERAL_DESC">
-        <field
-            name="download_assets"
-            type="radio"
-            class="btn-group btn-group-yesno"
-            default="1"
-            label="COM_JCAR_DOWNLOAD_ASSETS_LABEL"
-            description="COM_JCAR_DOWNLOAD_ASSETS_DESC">
-            <option value="1">JYES</option>
-            <option value="0">JNO</option>
-        </field>
-    </fieldset>
 </config>

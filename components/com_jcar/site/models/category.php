@@ -40,6 +40,12 @@ class JCarModelCategory extends JModelItem
 
             if (count($parts) == 2) {
                 $plugin = JArrayHelper::getValue($parts, 0);
+            } else {
+                JLog::add('Invalid id format', JLog::CRITICAL, 'jcar');
+
+                // if there are not two parts, we can assume that the id is
+                // missing the plugin identifier prefix.
+                throw new Exception('Invalid id format', 400);
             }
 
             $dispatcher = JEventDispatcher::getInstance();

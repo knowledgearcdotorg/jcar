@@ -51,6 +51,7 @@ class JCarRouter extends JComponentRouterBase
                 empty($menuItem) ||
                 empty($menuItem->component) ||
                 $menuItem->component != 'com_jcar' ||
+                $view != $mView || 
                 $layout != $mLayout) {
                 $segments[] = $view;
             }
@@ -66,7 +67,7 @@ class JCarRouter extends JComponentRouterBase
         }
 
         if ($mId != $id || $mView != $view) {
-            $segments[] = $id;
+            $segments[] = str_replace('/', urlencode('%2F'), $id);
             unset($query['id']);
         }
 
@@ -114,9 +115,7 @@ class JCarRouter extends JComponentRouterBase
             }
         } else {
             $vars['view'] = array_shift($segments);
-
-            // get the left over segments to create an id (including handles).
-            $vars['id'] = implode('/', $segments);
+            $vars['id'] = array_shift($segments);
         }
 
         return $vars;

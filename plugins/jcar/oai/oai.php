@@ -46,13 +46,15 @@ class PlgJCarOai extends JPlugin
             foreach ($sets as $set) {
                 $category = new stdClass();
 
-                $category->id = (string)$set->setSpec;
+                $category->id = $this->_name.":".(string)$set->setSpec;
                 $category->name = (string)$set->setName;
 
                 $categories[] = $category;
             }
         } else {
-            JLog::add($response->code, JLog::ERROR, 'jcardspace');
+            JLog::add($response->code, JLog::DEBUG, 'jcaroai');
+
+            throw new Exception('An error occurred.', $response->code);
         }
 
         return $categories;
@@ -72,13 +74,15 @@ class PlgJCarOai extends JPlugin
 
         $app = JFactory::getApplication();
 
-        $this->set('set', $app->input->getString('id'));
+        $set = $this->parseId($app->input->getString('id'));
+
+        $this->set('set', $set);
         $this->set('token', $app->input->getString('token', null));
 
         $category->id = $id;
         $category->name = "";
         $category->description = "";
-        $category->items = $this->getItems($id);
+        $category->items = $this->getItems();
         $category->pagination = $this->getPagination();
 
         return $category;
@@ -219,12 +223,7 @@ class PlgJCarOai extends JPlugin
             $url = new JUri($this->params->get('oai_url'));
 
             $url->setVar('verb', 'ListRecords');
-/*
-            $query = array(
-                "verb"=>"ListRecords",
-                "metadataPrefix"=>"oai_dc",
-                "set"=>$set);
-*/
+
             $app = JFactory::getApplication();
 
             $token = $this->get('token');
@@ -233,10 +232,10 @@ class PlgJCarOai extends JPlugin
                 $url->setVar('resumptionToken', $token);
             } else {
                 $url->setVar('metadataPrefix', 'oai_dc');
-                //$url->setVar('set', $set);
+                $url->setVar('set', $set);
             }
 
-            JLog::add((string)$url, JLog::DEBUG, 'jcardspace');
+            JLog::add((string)$url, JLog::DEBUG, 'jcaroai');
 
             $http = JHttpFactory::getHttp();
 
@@ -247,7 +246,7 @@ class PlgJCarOai extends JPlugin
 
                 $this->set('oai', $xml);
             } else {
-                JLog::add($response->body, JLog::ERROR, 'jcardspace');
+                JLog::add(print_r($response, true), JLog::DEBUG, 'jcaroai');
 
                 throw new Exception(
                     JText::_('PLG_JCAR_DSPACE_ERROR_'.$response->code),
@@ -326,6 +325,8 @@ class PlgJCarOai extends JPlugin
 
             return $data;
         } else {
+            JLog::add(print_r($response, true), JLog::DEBUG, 'jcaroai');
+
             throw new Exception("An error has occurred.", $response->code);
         }
     }
@@ -417,7 +418,32 @@ class PlgJCarOai extends JPlugin
 
             return $data;
         } else {
+            JLog::add(print_r($response, true), JLog::DEBUG, 'jcaroai');
+
             throw new Exception("An error has occurred.", $response->code);
+        }
+    }
+
+    /**
+     * Parse the id.
+     *
+     * @param   string     $id  An id to parse.
+     *
+     * @return  int        A parsed id.
+     *
+     * @throws  Exception  Throws a 400 html error if the id does not have the
+     * format oai:{id}.
+     */
+    private function parseId($id)
+    {
+        $parts = explode(":", $id, 2);
+
+        if (count($parts) == 2) {
+            return JArrayHelper::getValue($parts, 1);
+        } else {
+            JLog::add($this->getName().' = '.$id, JLog::DEBUG, 'jcaroai');
+
+            throw new Exception('Invalid id format', 400);
         }
     }
 }

@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
  */
 class JCarModelCategories extends JModelList
 {
-    protected $items;
+    protected $items = null;
 
     public function getItems()
     {
@@ -21,10 +21,8 @@ class JCarModelCategories extends JModelList
             $this->items = array();
         }
 
-        $plugin = null;
-
         $dispatcher = JEventDispatcher::getInstance();
-        JPluginHelper::importPlugin('jcar', $plugin);
+        JPluginHelper::importPlugin('jcar');
 
         // Trigger the data preparation event.
         $responses = $dispatcher->trigger('onJCarCategoriesRetrieve');
@@ -32,12 +30,9 @@ class JCarModelCategories extends JModelList
         // loop through responses until we find a valid one.
         $valid = false;
 
-        $this->items = null;
-
-        while (($response = current($responses)) && !$valid) {
+        while (($response = current($responses))) {
             if ($response !== null) {
-                $valid = true;
-                $this->items = $response;
+                $this->items = array_merge($this->items, $response);
             }
 
             next($responses);

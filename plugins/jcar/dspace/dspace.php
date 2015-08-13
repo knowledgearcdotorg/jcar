@@ -21,89 +21,6 @@ class PlgJCarDSpace extends JPlugin
     }
 
     /**
-     * Gets an item from a REST API-enabled DSpace archive.
-     *
-     * @param  int    $id  The id of an item to retrieve from the DSpace
-     * archive.
-     * @param  mixed  An item from the REST API-enabled DSpace archive, or
-     * null if nothing could be found.
-     */
-    public function onJCarItemRetrieve($id)
-    {
-        $parts = explode(":", $id, 2);
-
-        if (count($parts) == 2) {
-            $id = JArrayHelper::getValue($parts, 1);
-        }
-
-        return $this->getItem($id);
-    }
-
-    /**
-     * A DSpace-specific trigger for returning communities, sub-communities
-     * and collections as a tree structure.
-     *
-     * @return  A list of communities, sub-communities and collections as a
-     * tree structure.
-     */
-    public function onJCarCommunitiesRetrieve()
-    {
-        $communities = array();
-
-        $endpoint = '/communities.json?collections=true';
-        $url = new JUri($this->params->get('rest_url').$endpoint);
-
-        JLog::add($url, JLog::DEBUG, 'jcardspace');
-
-        $http = JHttpFactory::getHttp();
-
-        $response = $http->get((string)$url);
-
-        if ($response->code === 200) {
-            $data = json_decode($response->body);
-            $communities = $data->communities;
-
-            for ($i = 0; $i < count($communities); $i++) {
-                $communities[$i] = $this->parseCommunity($communities[$i]);
-            }
-        } else {
-            JLog::add($response->code, JLog::ERROR, 'jcardspace');
-        }
-
-        return $communities;
-    }
-
-    /**
-     * A DSpace-specific trigger for returning a community and its
-     * sub-communities and collections as a tree structure.
-     *
-     * @return  A community and its sub-communities and collections as a tree
-     * structure.
-     */
-    public function onJCarCommunityRetrieve($id)
-    {
-        $community = null;
-
-        $endpoint = '/communities/'.(int)$id.'.json?collections=true';
-        $url = $this->params->get('rest_url').$endpoint;
-
-        JLog::add($url, JLog::DEBUG, 'jcardspace');
-
-        $http = JHttpFactory::getHttp();
-
-        $response = $http->get($url);
-
-        if ($response->code === 200) {
-            $community = json_decode($response->body);
-            $community = $this->parseCommunity($community);
-        } else {
-            JLog::add($response->code, JLog::ERROR, 'jcardspace');
-        }
-
-        return $community;
-    }
-
-    /**
      * Gets a list of DSpace collections as generic JCar categories.
      *
      * @return  A list of DSpace collections as generic JCar categories.
@@ -129,7 +46,9 @@ class PlgJCarDSpace extends JPlugin
                 $categories[] = $this->parseCollection($collection);
             }
         } else {
-            JLog::add($response->code, JLog::ERROR, 'jcardspace');
+            JLog::add(print_r($response, true), JLog::DEBUG, 'jcardspace');
+
+            throw new Exception('An error occurred.', $response->code);
         }
 
         return $categories;
@@ -141,12 +60,14 @@ class PlgJCarDSpace extends JPlugin
      * recordset.
      *
      * @return  A DSpace collection's information, the items within the
-     * category and paging informatoin to allow for browsing across the entire
+     * category and paging information to allow for browsing across the entire
      * recordset.
      */
     public function onJCarCategoryRetrieve($id)
     {
         $category = null;
+
+        $id = $this->parseId($id);
 
         $endpoint = '/collections/'.$id.'.json';
         $url = new JUri($this->params->get('rest_url').$endpoint);
@@ -161,13 +82,107 @@ class PlgJCarDSpace extends JPlugin
             $data = json_decode($response->body);
 
             $category = $this->parseCollection($data);
-            $category->items = $this->getItems($category->id);
+            $category->items = $this->getItems($id);
             $category->pagination = $this->getPagination();
         } else {
-            JLog::add($response->code, JLog::ERROR, 'jcardspace');
+            JLog::add(print_r($response, true), JLog::DEBUG, 'jcardspace');
+
+            throw new Exception('An error occurred.', $response->code);
         }
 
         return $category;
+    }
+
+    /**
+     * Gets an item from a REST API-enabled DSpace archive.
+     *
+     * @param   int     $id  The id of an item to retrieve from the DSpace
+     * archive.
+     *
+     * @return   mixed  An item from the REST API-enabled DSpace archive, or
+     * null if nothing could be found.
+     */
+    public function onJCarItemRetrieve($id)
+    {
+        $id = $this->parseId($id);
+
+        return $this->getItem($id);
+    }
+
+    /**
+     * A DSpace-specific trigger for returning communities, sub-communities
+     * and collections as a tree structure.
+     *
+     * @return  array      A list of communities, sub-communities and
+     * collections as a tree structure.
+     *
+     * @throws  Exception  Thrown if the API endpoint does not return the html
+     * code 200.
+     */
+    public function onJCarCommunitiesRetrieve()
+    {
+        $communities = array();
+
+        $endpoint = '/communities.json?collections=true';
+        $url = new JUri($this->params->get('rest_url').$endpoint);
+
+        JLog::add($url, JLog::DEBUG, 'jcardspace');
+
+        $http = JHttpFactory::getHttp();
+
+        $response = $http->get((string)$url);
+
+        if ($response->code === 200) {
+            $data = json_decode($response->body);
+            $communities = $data->communities;
+
+            for ($i = 0; $i < count($communities); $i++) {
+                $communities[$i] = $this->parseCommunity($communities[$i]);
+            }
+        } else {
+            JLog::add(print_r($response, true), JLog::DEBUG, 'jcardspace');
+
+            throw new Exception('An error occurred.', $response->code);
+        }
+
+        return $communities;
+    }
+
+    /**
+     * A DSpace-specific trigger for returning a community and its
+     * sub-communities and collections as a tree structure.
+     *
+     * @return  stdClass   A community and its sub-communities and collections
+     * as a tree structure.
+     *
+     * @throws  Exception  Thrown if the API endpoint does not return the html
+     * code 200.
+     */
+    public function onJCarCommunityRetrieve($id)
+    {
+        $community = null;
+
+        $id = $this->parseId($id);
+
+        $endpoint = '/communities/'.(int)$id.'.json?collections=true';
+        $url = $this->params->get('rest_url').$endpoint;
+
+        JLog::add($url, JLog::DEBUG, 'jcardspace');
+
+        $http = JHttpFactory::getHttp();
+
+        $response = $http->get($url);
+
+        if ($response->code === 200) {
+            $community = json_decode($response->body);
+            $community = $this->parseCommunity($community);
+        } else {
+            JLog::add(print_r($response, true), JLog::DEBUG, 'jcardspace');
+
+            throw new Exception('An error occurred.', $response->code);
+        }
+
+        return $community;
     }
 
     /**
@@ -180,6 +195,7 @@ class PlgJCarDSpace extends JPlugin
      */
     private function parseCommunity($community)
     {
+        $community->id = $this->_name.":".$community->id;
         $community->description = $community->shortDescription;
         $community->introduction = $community->introductoryText;
         $community->copyright = $community->copyrightText;
@@ -195,10 +211,6 @@ class PlgJCarDSpace extends JPlugin
             $id = JArrayHelper::getValue($community->collections, $i);
             $collection = $this->parseCollection($id);
 
-            $collection->description = $collection->shortDescription;
-            $collection->introduction = $collection->introductoryText;
-            $collection->copyright = $collection->copyrightText;
-
             $community->collections[$i] = $collection;
         }
 
@@ -212,6 +224,9 @@ class PlgJCarDSpace extends JPlugin
      * @param   stdClass  $collection  The collection to parse.
      *
      * @return  stdClass  A DSpace collection with additional content.
+     *
+     * @throws  Exception  Thrown if the API endpoint does not return the html
+     * code 200.
      */
     private function parseCollection($collection)
     {
@@ -228,9 +243,12 @@ class PlgJCarDSpace extends JPlugin
             $data = json_decode($response->body);
             $collection->count = (int)$data;
         } else {
-            JLog::add($response->code, JLog::ERROR, 'jcardspace');
+            JLog::add(print_r($response, true), JLog::DEBUG, 'jcardspace');
+
+            throw new Exception('An error occurred.', $response->code);
         }
 
+        $collection->id = $this->_name.":".$collection->id;
         $collection->description = $collection->shortDescription;
         $collection->introduction = $collection->introductoryText;
         $collection->copyright = $collection->copyrightText;
@@ -246,6 +264,9 @@ class PlgJCarDSpace extends JPlugin
      *
      * @return  mixed  An item from the REST API-enabled DSpace archive, or
      * null if nothing could be found.
+     *
+     * @throws  Exception  Thrown if the API endpoint does not return the html
+     * code 200.
      */
     private function getItems($cid)
     {
@@ -271,8 +292,12 @@ class PlgJCarDSpace extends JPlugin
 
         if ($response->code === 200) {
             $items = json_decode($response->body);
+
+            for ($i = 0; $i < count($items); $i++) {
+                $items[$i]->id = $this->_name.":".$items[$i]->id;
+            }
         } else {
-            JLog::add($response->body, JLog::ERROR, 'jcardspace');
+            JLog::add(print_r($response, true), JLog::DEBUG, 'jcardspace');
 
             throw new Exception(
                 JText::_('PLG_JCAR_DSPACE_ERROR_'.$response->code),
@@ -298,7 +323,7 @@ class PlgJCarDSpace extends JPlugin
         if ($response->code === 200) {
             return (int)json_decode($response->body);
         } else {
-            JLog::add($response->body, JLog::ERROR, 'jcardspace');
+            JLog::add(print_r($response, true), JLog::DEBUG, 'jcardspace');
 
             throw new Exception(
                 JText::_('PLG_JCAR_DSPACE_ERROR_'.$response->code),
@@ -364,8 +389,11 @@ class PlgJCarDSpace extends JPlugin
 
             return $data;
         } else {
-            JLog::add($response->body, JLog::ERROR, 'jcardspace');
-            throw new Exception(JText::_('PLG_JCAR_DSPACE_ERROR_'.$response->code), $response->code);
+            JLog::add(print_r($response, true), JLog::DEBUG, 'jcardspace');
+
+            throw new Exception(
+                JText::_('PLG_JCAR_DSPACE_ERROR_'.$response->code),
+                $response->code);
         }
     }
 
@@ -389,8 +417,34 @@ class PlgJCarDSpace extends JPlugin
 
             return $data;
         } else {
-            JLog::add($response->body, \JLog::ERROR, 'jcardspace');
-            throw new Exception(JText::_('PLG_JCAR_DSPACE_ERROR_'.$response->code), $response->code);
+            JLog::add(print_r($response, true), JLog::DEBUG, 'jcardspace');
+
+            throw new Exception(
+                JText::_('PLG_JCAR_DSPACE_ERROR_'.$response->code),
+                $response->code);
+        }
+    }
+
+    /**
+     * Parse the id.
+     *
+     * @param   string     $id  An id to parse.
+     *
+     * @return  int        A parsed id.
+     *
+     * @throws  Exception  Throws a 400 html error if the id does not have the
+     * format dspace:{id}.
+     */
+    private function parseId($id)
+    {
+        $parts = explode(":", $id, 2);
+
+        if (count($parts) == 2) {
+            return JArrayHelper::getValue($parts, 1);
+        } else {
+            JLog::add($this->getName().' = '.$id, JLog::DEBUG, 'jcardspace');
+
+            throw new Exception('Invalid id format', 400);
         }
     }
 }

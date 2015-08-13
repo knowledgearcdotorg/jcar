@@ -22,7 +22,7 @@ defined('_JEXEC') or die;
         <?php foreach ($this->item->items as $item) : ?>
 
         <h2>
-            <a href="<?php echo 'index.php?option=com_jcar&view=item&id='.$item->id; ?>">
+            <a href="<?php echo JCarHelperRoute::getItemRoute($item->id); ?>">
                 <?php echo $item->name; ?></a></h2>
 
         <?php endforeach; ?>

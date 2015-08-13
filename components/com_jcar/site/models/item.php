@@ -15,6 +15,13 @@ class JCarModelItem extends JModelItem
 {
     protected $item;
 
+    public function __construct($config = array())
+    {
+        parent::__construct($config);
+
+        JLog::addLogger(array());
+    }
+
     protected function populateState()
     {
         parent::populateState();
@@ -40,13 +47,26 @@ class JCarModelItem extends JModelItem
 
             if (count($parts) == 2) {
                 $plugin = JArrayHelper::getValue($parts, 0);
+            } else {
+                JLog::add('Invalid id format', JLog::CRITICAL, 'jcar');
+
+                // if there are not two parts, we can assume that the id is
+                // missing the plugin identifier prefix.
+                throw new Exception('Invalid id format', 400);
             }
 
             $dispatcher = JEventDispatcher::getInstance();
             JPluginHelper::importPlugin('jcar', $plugin);
 
-            // Trigger the data preparation event.
-            $responses = $dispatcher->trigger('onJCarItemRetrieve', array($pk));
+            try {
+                // Trigger the data preparation event.
+                $responses = $dispatcher->trigger('onJCarItemRetrieve', array($pk));
+            } catch (Exception $e) {
+                JLog::add($e->getMessage(), JLog::CRITICAL, 'jcar');
+
+                // error we can't recover from? throw to user.
+                throw $e;
+            }
 
             // loop through responses until we find a valid one.
             $valid = false;
