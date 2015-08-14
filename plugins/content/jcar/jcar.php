@@ -10,9 +10,9 @@ defined('_JEXEC') or die;
 JLoader::import('joomla.filesystem.file');
 
 /**
- * Embeds a record from a REST API-enabled DSpace archive into a Joomla! article.
+ * Embeds a JCAR record into a Joomla! article.
  */
-class PlgContentDSpace extends JPlugin
+class PlgContentJCar extends JPlugin
 {
     private $item;
 
@@ -27,7 +27,7 @@ class PlgContentDSpace extends JPlugin
     }
 
     /**
-     * Adds DSpace metadata to the content of an article.
+     * Adds JCAR metadata to the content of an article.
      *
      * @param   string   $context  The context of the content being passed to the plugin.
      * @param   object   &$row     The article object. Note $article->text is also available
@@ -39,39 +39,43 @@ class PlgContentDSpace extends JPlugin
     public function onContentPrepare($context, &$row, &$params, $page = 0)
     {
         // Expression to search for
-        $regex = '/{jcar[^}]*}/';
+        $regex = '/{jcar\s(.*?)}/i';
 
-        preg_match_all($regex, $row->text, $matches);
+        preg_match_all($regex, $row->text, $matches, PREG_SET_ORDER);
 
-        foreach ($matches[0] as $match) {
+        if ($matches) {
+            $matches = array_shift($matches);
 
-            if(isset($match) && preg_match( '/ ([^}]+)}/', $match, $results)) {
+            $placeholder = JArrayHelper::getValue($matches, 0);
 
-                // separate parameters using delimiter - "|"
-                $values = explode('|', JArrayHelper::getValue($results, 1));
+            $match = JArrayHelper::getValue($matches, 1);
 
-                foreach($values as $param) {
+            // separate parameters using delimiter - "|"
+            $pluginParams = explode('|', $match);
+
+            $id = array_shift($pluginParams);
+
+            if (count($pluginParams)) {
+                foreach ($pluginParams as $param) {
                     list($key, $value) = explode('=', $param);
 
                     if(isset($key) && isset($value)) {
-                        $this->params->set('jcar.'.$key, $value);
+                        $this->params->set('jcar.plugin.'.$key, $value);
                     }
                 }
             }
-
-            $id = $this->params->get('jcar.id');
 
             $this->addMetaData($id);
 
             ob_start();
 
             $displayData = $this->getItem($id);
-            include JPluginHelper::getLayoutPath('content', 'dspace');
+            include JPluginHelper::getLayoutPath('content', 'jcar');
 
             $html = ob_get_contents();
             ob_end_clean();
 
-            $row->text = str_replace($match, $html, $row->text);
+            $row->text = str_replace($placeholder, $html, $row->text);
         }
 
         return true;
@@ -93,7 +97,10 @@ class PlgContentDSpace extends JPlugin
     {
         if (!$this->item) {
             JModelLegacy::addIncludePath(JPATH_ROOT.'/components/com_jcar/models');
+
             $model = JModelLegacy::getInstance('Item', 'JCarModel');
+
+            $model->setProperties($this->params->get('jcar'));
 
             $this->item = $model->getItem($id);
         }

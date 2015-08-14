@@ -59,8 +59,10 @@ class JCarModelItem extends JModelItem
             JPluginHelper::importPlugin('jcar', $plugin);
 
             try {
+                $vars = array($pk, $this->get('plugin', null));
+
                 // Trigger the data preparation event.
-                $responses = $dispatcher->trigger('onJCarItemRetrieve', array($pk));
+                $responses = $dispatcher->trigger('onJCarItemRetrieve', $vars);
             } catch (Exception $e) {
                 JLog::add($e->getMessage(), JLog::CRITICAL, 'jcar');
 

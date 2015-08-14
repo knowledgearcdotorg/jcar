@@ -96,14 +96,29 @@ class PlgJCarDSpace extends JPlugin
     /**
      * Gets an item from a REST API-enabled DSpace archive.
      *
-     * @param   int     $id  The id of an item to retrieve from the DSpace
-     * archive.
+     * @param   int       $id      The id of an item to retrieve from the
+     * DSpace archive.
+     * @param   stdClass  $params  Additional configuration details.
      *
-     * @return   mixed  An item from the REST API-enabled DSpace archive, or
+     * @return  mixed     An item from the REST API-enabled DSpace archive, or
      * null if nothing could be found.
      */
-    public function onJCarItemRetrieve($id)
+    public function onJCarItemRetrieve($id, $params = null)
     {
+        if ($params) {
+            if ($url = $params->url) {
+                $this->params->set('rest_url', $url);
+            }
+
+            if ($username = $params->username) {
+                $this->params->set('username', $username);
+            }
+
+            if ($password = $params->password) {
+                $this->params->set('password', $password);
+            }
+        }
+
         $id = $this->parseId($id);
 
         return $this->getItem($id);

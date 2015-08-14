@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension version="3.3" type="plugin" group="content" method="upgrade">
-    <name>plg_content_dspace</name>
+    <name>plg_content_jcar</name>
     <author>KnowledgeArc</author>
     <creationDate>2015/04/30</creationDate>
     <copyright>Copyright (C) 2015 KnowledgeArc Ltd. All rights reserved.</copyright>
@@ -8,15 +8,16 @@
     <authorEmail>development@knowledgearc.com</authorEmail>
     <authorUrl>www.knowledgearc.org</authorUrl>
     <version>0.3.0</version>
-    <description>PLG_CONTENT_DSPACE_XML_DESCRIPTION</description>
+    <description>PLG_CONTENT_JCAR_XML_DESCRIPTION</description>
 
     <files>
-        <filename plugin="dspace">dspace.php</filename>
+        <filename plugin="jcar">jcar.php</filename>
+        <folder>tmpl</folder>
     </files>
 
     <languages>
-        <language tag="en-GB">language/en-GB/en-GB.plg_content_dspace.ini</language>
-        <language tag="en-GB">language/en-GB/en-GB.plg_content_dspace.sys.ini</language>
+        <language tag="en-GB">language/en-GB/en-GB.plg_content_jcar.ini</language>
+        <language tag="en-GB">language/en-GB/en-GB.plg_content_jcar.sys.ini</language>
     </languages>
     <config>
         <fields name="params">
