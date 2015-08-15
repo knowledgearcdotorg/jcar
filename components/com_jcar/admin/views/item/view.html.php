@@ -15,12 +15,11 @@ JLoader::register('JCarHelper', JPATH_ROOT.'/administrator/components/com_jcar/h
  */
 class JCarViewItem extends JViewLegacy
 {
-    protected $option;
-    protected $item;
+    protected $form;
 
     public function display($tpl = null)
     {
-        $this->option = JFactory::getApplication()->input->getCmd('option');
+        $this->form = $this->get("Form");
 
         $input = JFactory::getApplication()->input;
         $eName = $input->getCmd('e_name');

@@ -132,12 +132,12 @@ class PlgJCarDSpace extends JPlugin
                 $this->params->set('rest_url', $url);
             }
 
-            if ($username = $params->username) {
-                $this->params->set('username', $username);
+            if ($key = $params->key) {
+                $this->params->set('rest_key', $key);
             }
 
-            if ($password = $params->password) {
-                $this->params->set('password', $password);
+            if ($secret = $params->secret) {
+                $this->params->set('rest_secret', $secret);
             }
         }
 
