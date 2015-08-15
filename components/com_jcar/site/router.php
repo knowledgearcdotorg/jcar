@@ -41,18 +41,12 @@ class JCarRouter extends JComponentRouterBase
         $mLayout = JArrayHelper::getValue($menuItem->query, 'layout', null);
         $mId = JArrayHelper::getValue($menuItem->query, 'id', null);
 
-        // remove template name from layout.
-        if (count($parts = explode(':', $mLayout)) == 2) {
-            $mLayout = JArrayHelper::getValue($parts, 1);
-        }
-
         if ($view) {
             if (!$itemId ||
                 empty($menuItem) ||
                 empty($menuItem->component) ||
                 $menuItem->component != 'com_jcar' ||
-                $view != $mView || 
-                $layout != $mLayout) {
+                ($view != $mView && $layout != $mLayout)) {
                 $segments[] = $view;
             }
 

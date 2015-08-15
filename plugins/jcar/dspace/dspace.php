@@ -7,6 +7,8 @@
  */
 defined('_JEXEC') or die;
 
+use \Joomla\Utilities\ArrayHelper;
+
 /**
  * Retrieves information from a REST API-enabled DSpace archive.
  */
@@ -27,6 +29,17 @@ class PlgJCarDSpace extends JPlugin
      */
     public function onJCarCategoriesRetrieve()
     {
+        // A special case if the dspace layout is selected
+        // (I.e. we're displaying communities).
+        $layout = JFactory::getApplication()->input->getString('layout');
+        $parts = explode(":", $layout);
+
+        if (count($parts) == 2) {
+            if (JArrayHelper::getValue($parts, 1) == 'dspace') {
+                return $this->getCommunities();
+            }
+        }
+
         $categories = array();
 
         $endpoint = '/collections.json';
@@ -65,6 +78,17 @@ class PlgJCarDSpace extends JPlugin
      */
     public function onJCarCategoryRetrieve($id)
     {
+        // A special case if the dspace layout is selected
+        // (I.e. we're displaying communities).
+        $layout = JFactory::getApplication()->input->getString('layout');
+        $parts = explode(":", $layout);
+
+        if (count($parts) == 2) {
+            if (JArrayHelper::getValue($parts, 1) == 'dspace') {
+                return $this->getCommunity($id);
+            }
+        }
+
         $category = null;
 
         $id = $this->parseId($id);
@@ -121,12 +145,93 @@ class PlgJCarDSpace extends JPlugin
 
         $id = $this->parseId($id);
 
-        return $this->getItem($id);
+        $url = $this->params->get('rest_url').'/items/'.$id.'.json';
+
+        JLog::add($url, JLog::DEBUG, 'jcardspace');
+
+        $http = JHttpFactory::getHttp();
+
+        $response = $http->get($url);
+
+        if ($response->code === 200) {
+            $data = json_decode($response->body);
+
+            $array = array();
+            foreach ($data->metadata as $metadata) {
+                $key = $metadata->schema.'.'.$metadata->element;
+
+                if (isset($metadata->qualifier)) {
+                    $key .= '.'.$metadata->qualifier;
+                }
+
+                if (!JArrayHelper::getValue($array, $key)) {
+                    $array[$key] = array();
+                }
+
+                $array[$key][] = $metadata->value;
+            }
+
+            $data->metadata = $array;
+
+            $data->bundles = $this->getBundles($id);
+
+            return $data;
+        } else {
+            JLog::add(print_r($response, true), JLog::DEBUG, 'jcardspace');
+
+            throw new Exception(
+                JText::_('PLG_JCAR_DSPACE_ERROR_'.$response->code),
+                $response->code);
+        }
     }
 
     /**
-     * A DSpace-specific trigger for returning communities, sub-communities
-     * and collections as a tree structure.
+     * Gets an item from a REST API-enabled DSpace archive.
+     *
+     * @param   int       $id      The id of an item to retrieve from the
+     * DSpace archive.
+     * @param   stdClass  $params  Additional configuration details.
+     *
+     * @return  mixed     An item from the REST API-enabled DSpace archive, or
+     * null if nothing could be found.
+     */
+    public function onJCarAssetRetrieve($id)
+    {
+        $id = $this->parseId($id);
+
+        $url = $this->params->get('rest_url').'/bitstreams/'.$id.'.json';
+
+        JLog::add($url, JLog::DEBUG, 'jcardspace');
+
+        $http = JHttpFactory::getHttp();
+
+        $response = $http->get($url);
+
+        if ($response->code === 200) {
+            $data = json_decode($response->body);
+
+            $data->id = $this->_name.":".$data->id;
+
+            $downloadUrl =
+                $this->params->get('rest_url').'/bitstreams/'.$id.'/download';
+
+            $downloadUrl = new JUri($downloadUrl);
+
+            $data->url = $downloadUrl;
+
+            return $data;
+        } else {
+            JLog::add(print_r($response, true), JLog::DEBUG, 'jcardspace');
+
+            throw new Exception(
+                JText::_('PLG_JCAR_DSPACE_ERROR_'.$response->code),
+                $response->code);
+        }
+    }
+
+    /**
+     * Gets all communities, sub-communities and collections as a tree
+     * structure.
      *
      * @return  array      A list of communities, sub-communities and
      * collections as a tree structure.
@@ -134,7 +239,7 @@ class PlgJCarDSpace extends JPlugin
      * @throws  Exception  Thrown if the API endpoint does not return the html
      * code 200.
      */
-    public function onJCarCommunitiesRetrieve()
+    private function getCommunities()
     {
         $communities = array();
 
@@ -164,8 +269,8 @@ class PlgJCarDSpace extends JPlugin
     }
 
     /**
-     * A DSpace-specific trigger for returning a community and its
-     * sub-communities and collections as a tree structure.
+     * Gets community and its sub-communities and collections as a tree
+     * structure.
      *
      * @return  stdClass   A community and its sub-communities and collections
      * as a tree structure.
@@ -173,7 +278,7 @@ class PlgJCarDSpace extends JPlugin
      * @throws  Exception  Thrown if the API endpoint does not return the html
      * code 200.
      */
-    public function onJCarCommunityRetrieve($id)
+    public function getCommunity($id)
     {
         $community = null;
 
@@ -352,6 +457,7 @@ class PlgJCarDSpace extends JPlugin
     {
         $app = JFactory::getApplication();
 
+        // @TODO these should be passed as method params.
         $total = $this->getItemsCount($app->input->getInt('id'));
         $start = $app->input->getInt('limitstart', 0);
         $limit = $app->input->getInt('limit', 20);
@@ -359,57 +465,6 @@ class PlgJCarDSpace extends JPlugin
         $pagination = new JPagination($total, $start, $limit);
 
         return $pagination;
-    }
-
-    /**
-     * Gets an item from the REST API-enabled DSpace archive.
-     *
-     * @param   int    $id  The id of an item to retrieve from the DSpace
-     * archive.
-     *
-     * @return  mixed  An item from the REST API-enabled DSpace archive, or
-     * null if nothing could be found.
-     */
-    private function getItem($id)
-    {
-        $url = $this->params->get('rest_url').'/items/'.$id.'.json';
-
-        JLog::add($url, JLog::DEBUG, 'jcardspace');
-
-        $http = JHttpFactory::getHttp();
-
-        $response = $http->get($url);
-
-        if ($response->code === 200) {
-            $data = json_decode($response->body);
-
-            $array = array();
-            foreach ($data->metadata as $metadata) {
-                $key = $metadata->schema.'.'.$metadata->element;
-
-                if (isset($metadata->qualifier)) {
-                    $key .= '.'.$metadata->qualifier;
-                }
-
-                if (!JArrayHelper::getValue($array, $key)) {
-                    $array[$key] = array();
-                }
-
-                $array[$key][] = $metadata->value;
-            }
-
-            $data->metadata = $array;
-
-            $data->bundles = $this->getBundles($id);
-
-            return $data;
-        } else {
-            JLog::add(print_r($response, true), JLog::DEBUG, 'jcardspace');
-
-            throw new Exception(
-                JText::_('PLG_JCAR_DSPACE_ERROR_'.$response->code),
-                $response->code);
-        }
     }
 
     /**
@@ -428,9 +483,30 @@ class PlgJCarDSpace extends JPlugin
         $response = $http->get($url);
 
         if ($response->code === 200) {
-            $data = json_decode($response->body);
+            $bundles = json_decode($response->body);
 
-            return $data;
+            for ($i = 0; $i < count($bundles); $i++) {
+                $bundle = ArrayHelper::getValue($bundles, $i);
+                $bitstreams = $bundle->bitstreams;
+
+                for ($j = 0; $j < count($bitstreams); $j++) {
+                    $bitstream = ArrayHelper::getValue($bitstreams, $j);
+
+                    $url = new JUri('index.php');
+
+                    $url->setQuery(
+                        array(
+                            'option'=>'com_jcar',
+                            'view'=>'asset',
+                            'format'=>'raw',
+                            'id'=>$this->_name.':'.$bitstream->id,
+                            'Itemid'=>JFactory::getApplication()->input->getInt('Itemid')));
+
+                    $bundles[$i]->bitstreams[$j]->url = (string)$url;
+                }
+            }
+
+            return $bundles;
         } else {
             JLog::add(print_r($response, true), JLog::DEBUG, 'jcardspace');
 
@@ -455,7 +531,7 @@ class PlgJCarDSpace extends JPlugin
         $parts = explode(":", $id, 2);
 
         if (count($parts) == 2) {
-            return JArrayHelper::getValue($parts, 1);
+            return ArrayHelper::getValue($parts, 1);
         } else {
             JLog::add($this->getName().' = '.$id, JLog::DEBUG, 'jcardspace');
 

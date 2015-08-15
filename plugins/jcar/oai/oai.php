@@ -72,9 +72,7 @@ class PlgJCarOai extends JPlugin
     {
         $category = new stdClass();
 
-        $app = JFactory::getApplication();
-
-        $set = $this->parseId($app->input->getString('id'));
+        $set = $this->parseId($id);
 
         $this->set('set', $set);
         $this->set('token', $app->input->getString('token', null));

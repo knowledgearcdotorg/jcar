@@ -13,29 +13,34 @@ $url->setQuery(
     array(
         'option'=>'com_jcar',
         'view'=>'category',
-        'layout'=>'dspace'));
+        'layout'=>JFactory::getApplication()->input->getString('layout'),
+        'Itemid'=>JFactory::getApplication()->input->getInt('Itemid')));
 ?>
 <ul>
     <?php
-    foreach ($this->communities as $community) :
-        $url->setVar('id', $community->id);
+    foreach ($this->items as $item) :
+        $url->setVar('id', $item->id);
     ?>
 
     <li>
         <a href="<?php echo (string)$url; ?>">
-            <?php echo $community->name; ?></a>
+            <?php echo $item->name; ?></a>
 
         <?php
-        if (count($community->subCommunities)) :
-            $this->communities = $community->subCommunities;
-            echo $this->loadTemplate('communities');
+        if (isset($item->subCommunities)) :
+            if (count($item->subCommunities)) :
+                $this->items = $item->subCommunities;
+                echo $this->loadTemplate('communities');
+            endif;
         endif;
         ?>
 
         <?php
-        if (count($community->collections)) :
-            $this->collections = $community->collections;
-            echo $this->loadTemplate('collections');
+        if (isset($item->collections)) :
+            if (count($item->collections)) :
+                $this->collections = $item->collections;
+                echo $this->loadTemplate('collections');
+            endif;
         endif;
         ?>
     </li>

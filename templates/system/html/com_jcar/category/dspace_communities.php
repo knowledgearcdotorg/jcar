@@ -13,7 +13,8 @@ $url->setQuery(
     array(
         'option'=>'com_jcar',
         'view'=>'category',
-        'layout'=>'dspace'));
+        'layout'=>'dspace',
+        'Itemid'=>JFactory::getApplication()->input->getInt('Itemid')));
 ?>
 <ul>
     <?php

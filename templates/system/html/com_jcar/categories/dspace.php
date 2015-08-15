@@ -11,13 +11,4 @@
  */
 defined('_JEXEC') or die;
 
-$dispatcher = JEventDispatcher::getInstance();
-JPluginHelper::importPlugin('jcar', "dspace");
-
-// Trigger the data preparation event.
-$response = $dispatcher->trigger('onJCarCommunitiesRetrieve');
-$response = JArrayHelper::getValue($response, 0, array());
-
-$this->communities = $response;
-
 echo $this->loadTemplate('communities');
