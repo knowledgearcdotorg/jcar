@@ -107,8 +107,8 @@ abstract class JCarHelperRoute
             foreach ($needles as $view => $ids) {
                 if (isset(self::$lookup[$language][$view])) {
                     foreach ($ids as $id) {
-                        if (isset(self::$lookup[$language][$view][(int) $id])) {
-                            return self::$lookup[$language][$view][(int) $id];
+                        if (isset(self::$lookup[$language][$view][$id])) {
+                            return self::$lookup[$language][$view][$id];
                         }
                     }
                 }
