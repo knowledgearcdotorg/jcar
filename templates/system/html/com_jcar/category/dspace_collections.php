@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
     <?php
     foreach ($this->collections as $collection) :
         $url = JCarHelperRoute::getCategoryRoute($collection->id);
+        
         $count = isset($collection->count) ? ' ('.$collection->count.')' : '';
     ?>
 

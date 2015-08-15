@@ -46,7 +46,7 @@ class JCarRouter extends JComponentRouterBase
                 empty($menuItem) ||
                 empty($menuItem->component) ||
                 $menuItem->component != 'com_jcar' ||
-                ($view != $mView && $layout != $mLayout)) {
+                ($view != 'category' && $mView != $view)) {
                 $segments[] = $view;
             }
 
@@ -97,16 +97,14 @@ class JCarRouter extends JComponentRouterBase
             $mView = JArrayHelper::getValue($item->query, 'view');
             $mLayout = JArrayHelper::getValue($item->query, 'layout');
 
-            if ($mView == "categories") {
-                if (count($segments) == 1) {
-                    $vars['view'] = "category";
-                    $vars['layout'] = $mLayout;
-                } else {
-                    $vars['view'] = array_shift($segments);
-                }
-
-                $vars['id'] = array_shift($segments);
+            if ($mView == "categories" && count($segments) == 1) {
+                $vars['view'] = "category";
+                $vars['layout'] = $mLayout;
+            } else {
+                $vars['view'] = array_shift($segments);
             }
+
+            $vars['id'] = array_shift($segments);
         } else {
             $vars['view'] = array_shift($segments);
             $vars['id'] = array_shift($segments);

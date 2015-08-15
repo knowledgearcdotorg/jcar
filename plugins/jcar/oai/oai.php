@@ -6,6 +6,10 @@
  */
 defined('_JEXEC') or die;
 
+use \Joomla\Utilities\ArrayHelper;
+
+JLoader::register('JCarHelper', JPATH_ROOT.'/administrator/components/com_jcar/helpers/jcar.php');
+
 /**
  * Retrieves information from a REST API-enabled DSpace archive.
  */
@@ -72,7 +76,9 @@ class PlgJCarOai extends JPlugin
     {
         $category = new stdClass();
 
-        $set = $this->parseId($id);
+        $set = JCarHelper::parseId($id);
+
+        $app = JFactory::getApplication();
 
         $this->set('set', $set);
         $this->set('token', $app->input->getString('token', null));
@@ -305,7 +311,7 @@ class PlgJCarOai extends JPlugin
                         if (JString::trim((string)$tag)) {
                             $key = $prefix.':'.(string)$tag->getName();
 
-                            $values = JArrayHelper::getValue($metadata, $key);
+                            $values = ArrayHelper::getValue($metadata, $key);
 
                             if (!is_array($values)) {
                                 $values = array();
@@ -389,10 +395,10 @@ class PlgJCarOai extends JPlugin
                     $attrs[$key] = trim($value);
                 }
 
-                $href = JArrayHelper::getValue($attrs, 'href', null, 'string');
-                $name = JArrayHelper::getValue($attrs, 'title', null, 'string');
-                $type = JArrayHelper::getValue($attrs, 'type', null, 'string');
-                $size = JArrayHelper::getValue($attrs, 'length', null, 'int');
+                $href = ArrayHelper::getValue($attrs, 'href', null, 'string');
+                $name = ArrayHelper::getValue($attrs, 'title', null, 'string');
+                $type = ArrayHelper::getValue($attrs, 'type', null, 'string');
+                $size = ArrayHelper::getValue($attrs, 'length', null, 'int');
 
                 $bitstream = new stdClass();
                 $bitstream->url = urldecode($href);
@@ -407,7 +413,7 @@ class PlgJCarOai extends JPlugin
 
                 $derivatives = $xml->xpath($description);
                 $derivative = strtolower(
-                    JArrayHelper::getValue(
+                    ArrayHelper::getValue(
                         $derivatives,
                         0,
                         'original',
@@ -427,29 +433,6 @@ class PlgJCarOai extends JPlugin
             JLog::add(print_r($response, true), JLog::DEBUG, 'jcaroai');
 
             throw new Exception("An error has occurred.", $response->code);
-        }
-    }
-
-    /**
-     * Parse the id.
-     *
-     * @param   string     $id  An id to parse.
-     *
-     * @return  int        A parsed id.
-     *
-     * @throws  Exception  Throws a 400 html error if the id does not have the
-     * format oai:{id}.
-     */
-    private function parseId($id)
-    {
-        $parts = explode(":", $id, 2);
-
-        if (count($parts) == 2) {
-            return JArrayHelper::getValue($parts, 1);
-        } else {
-            JLog::add($this->getName().' = '.$id, JLog::DEBUG, 'jcaroai');
-
-            throw new Exception('Invalid id format', 400);
         }
     }
 }

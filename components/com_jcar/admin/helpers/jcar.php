@@ -8,6 +8,8 @@
  */
 defined('_JEXEC') or die;
 
+use \Joomla\Utilities\ArrayHelper;
+
 /**
  * Provides helper methods for the component.
  */
@@ -69,5 +71,37 @@ class JCarHelper
         $suffixes = array('', 'k', 'M', 'G', 'T');
 
         return round(pow(1024, $base - floor($base)), $precision) . $suffixes[floor($base)];
+    }
+
+    public static function cloak($value)
+    {
+        // remove email addresses from metadata.
+        $pattern = "/[^@\s]*@[^@\s]*\.[^@\s]*/";
+        $replacement =JText::_("COM_JCAR_CLOAK");
+
+        return preg_replace($pattern, $replacement, $value);
+    }
+
+    /**
+     * Parse the id.
+     *
+     * @param   string     $id  An id to parse.
+     *
+     * @return  int        A parsed id.
+     *
+     * @throws  Exception  Throws a 400 html error if the id does not have the
+     * format dspace:{id}.
+     */
+    public static function parseId($id)
+    {
+        $parts = explode(":", $id, 2);
+
+        if (count($parts) == 2) {
+            return ArrayHelper::getValue($parts, 1);
+        } else {
+            JLog::add('Requested id='.$id, JLog::DEBUG, 'jcar');
+
+            throw new Exception('Invalid id format', 400);
+        }
     }
 }

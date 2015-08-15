@@ -9,6 +9,8 @@ defined('_JEXEC') or die;
 
 use \Joomla\Utilities\ArrayHelper;
 
+JLoader::register('JCarHelper', JPATH_ROOT.'/administrator/components/com_jcar/helpers/jcar.php');
+
 /**
  * Retrieves information from a REST API-enabled DSpace archive.
  */
@@ -35,7 +37,7 @@ class PlgJCarDSpace extends JPlugin
         $parts = explode(":", $layout);
 
         if (count($parts) == 2) {
-            if (JArrayHelper::getValue($parts, 1) == 'dspace') {
+            if (ArrayHelper::getValue($parts, 1) == 'dspace') {
                 return $this->getCommunities();
             }
         }
@@ -78,20 +80,16 @@ class PlgJCarDSpace extends JPlugin
      */
     public function onJCarCategoryRetrieve($id)
     {
-        // A special case if the dspace layout is selected
-        // (I.e. we're displaying communities).
-        $layout = JFactory::getApplication()->input->getString('layout');
-        $parts = explode(":", $layout);
-
-        if (count($parts) == 2) {
-            if (JArrayHelper::getValue($parts, 1) == 'dspace') {
-                return $this->getCommunity($id);
-            }
-        }
-
         $category = null;
 
-        $id = $this->parseId($id);
+        $id = JCarHelper::parseId($id);
+
+        $parts = explode(":", $id);
+
+        if (count($parts) == 2 &&
+            ArrayHelper::getValue($parts, 0) == 'community') {
+            return $this->getCommunity($id);
+        }
 
         $endpoint = '/collections/'.$id.'.json';
         $url = new JUri($this->params->get('rest_url').$endpoint);
@@ -143,7 +141,7 @@ class PlgJCarDSpace extends JPlugin
             }
         }
 
-        $id = $this->parseId($id);
+        $id = JCarHelper::parseId($id);
 
         $url = $this->params->get('rest_url').'/items/'.$id.'.json';
 
@@ -164,9 +162,11 @@ class PlgJCarDSpace extends JPlugin
                     $key .= '.'.$metadata->qualifier;
                 }
 
-                if (!JArrayHelper::getValue($array, $key)) {
+                if (!ArrayHelper::getValue($array, $key)) {
                     $array[$key] = array();
                 }
+
+                $metadata->value = JCarHelper::cloak($metadata->value);
 
                 $array[$key][] = $metadata->value;
             }
@@ -197,7 +197,7 @@ class PlgJCarDSpace extends JPlugin
      */
     public function onJCarAssetRetrieve($id)
     {
-        $id = $this->parseId($id);
+        $id = JCarHelper::parseId($id);
 
         $url = $this->params->get('rest_url').'/bitstreams/'.$id.'.json';
 
@@ -282,7 +282,7 @@ class PlgJCarDSpace extends JPlugin
     {
         $community = null;
 
-        $id = $this->parseId($id);
+        $id = JCarHelper::parseId($id);
 
         $endpoint = '/communities/'.(int)$id.'.json?collections=true';
         $url = $this->params->get('rest_url').$endpoint;
@@ -315,20 +315,20 @@ class PlgJCarDSpace extends JPlugin
      */
     private function parseCommunity($community)
     {
-        $community->id = $this->_name.":".$community->id;
+        $community->id = $this->_name.":community:".$community->id;
         $community->description = $community->shortDescription;
         $community->introduction = $community->introductoryText;
         $community->copyright = $community->copyrightText;
 
         for ($i = 0; $i < count($community->subCommunities); $i++) {
-            $subCommunity = JArrayHelper($community->subCommunities, $i);
+            $subCommunity = ArrayHelper($community->subCommunities, $i);
             $subCommunity = $this->parseCommunity($subCommunity);
 
             $community->subCommunities[$i] = subCommunity;
         }
 
         for ($i = 0; $i < count($community->collections); $i++) {
-            $id = JArrayHelper::getValue($community->collections, $i);
+            $id = ArrayHelper::getValue($community->collections, $i);
             $collection = $this->parseCollection($id);
 
             $community->collections[$i] = $collection;
@@ -513,29 +513,6 @@ class PlgJCarDSpace extends JPlugin
             throw new Exception(
                 JText::_('PLG_JCAR_DSPACE_ERROR_'.$response->code),
                 $response->code);
-        }
-    }
-
-    /**
-     * Parse the id.
-     *
-     * @param   string     $id  An id to parse.
-     *
-     * @return  int        A parsed id.
-     *
-     * @throws  Exception  Throws a 400 html error if the id does not have the
-     * format dspace:{id}.
-     */
-    private function parseId($id)
-    {
-        $parts = explode(":", $id, 2);
-
-        if (count($parts) == 2) {
-            return ArrayHelper::getValue($parts, 1);
-        } else {
-            JLog::add($this->getName().' = '.$id, JLog::DEBUG, 'jcardspace');
-
-            throw new Exception('Invalid id format', 400);
         }
     }
 }
