@@ -500,15 +500,23 @@ class PlgJCarDSpace extends JPlugin
                 for ($j = 0; $j < count($bitstreams); $j++) {
                     $bitstream = ArrayHelper::getValue($bitstreams, $j);
 
-                    $url = new JUri('index.php');
+                    if ((bool)$this->params->get('stream')) {
+                        $url = new JUri('index.php');
 
-                    $url->setQuery(
-                        array(
-                            'option'=>'com_jcar',
-                            'view'=>'asset',
-                            'format'=>'raw',
-                            'id'=>$this->_name.':'.$bitstream->id,
-                            'Itemid'=>JFactory::getApplication()->input->getInt('Itemid')));
+                        $url->setQuery(
+                            array(
+                                'option'=>'com_jcar',
+                                'view'=>'asset',
+                                'format'=>'raw',
+                                'id'=>$this->_name.':'.$bitstream->id,
+                                'Itemid'=>JFactory::getApplication()->input->getInt('Itemid')));
+                    } else {
+                        $url = new JUri(
+                            $this->params->get('rest_url').
+                            '/bitstreams/'.
+                            $bitstream->id.
+                            '/download');
+                    }
 
                     $bundles[$i]->bitstreams[$j]->url = (string)$url;
                 }

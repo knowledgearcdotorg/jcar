@@ -50,6 +50,17 @@
                     description="PLG_JCAR_DSPACE_FIELD_EXCLUDE_BUNDLES_DESC"
                     size="40"
                     class="inputbox"/>
+
+                <field
+                    name="stream"
+                    type="radio"
+                    class="btn-group btn-group-yesno"
+                    default="0"
+                    label="PLG_JCAR_DSPACE_FIELD_STREAM_LABEL"
+                    description="PLG_JCAR_DSPACE_FIELD_STREAM_DESC">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
             </fieldset>
         </fields>
     </config>
