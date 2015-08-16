@@ -1,19 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<form>
+<form addfieldpath="administrator/components/com_jcar/models/fields">
     <field
         name="id"
-        type="text"
-        label="COM_JCAR_ITEM_ID_TITLE"
-        required="true"/>
-
-    <field
-        name="plugin"
-        type="plugins"
+        type="jcar.idlookup"
         folder="jcar"
-        default=""
-        label="COM_JCAR_FIELD_CONFIGURATION_PLUGIN_LABEL"
-        description="COM_JCAR_FIELD_CONFIGURATION_PLUGIN_DESC"
-        required="true">
-        <option value="">Select</option>
-    </field>
+        label="COM_JCAR_ITEM_ID_TITLE"
+        required="true"
+        placeholder="Specify identifier..."/>
 </form>

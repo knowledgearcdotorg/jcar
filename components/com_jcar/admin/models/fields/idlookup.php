@@ -9,59 +9,40 @@
 
 defined('JPATH_BASE') or die;
 
-JFormHelper::loadFieldClass('list');
+JLoader::import('joomla.form.helper');
+JFormHelper::loadFieldClass('plugins');
+
+use \Joomla\Utilities\ArrayHelper;
 
 /**
- * Form Field class for the Joomla Framework.
- *
- * @since  1.6
+ * Id lookup field.
  */
-class JCarFormFieldIdLookup extends JFormField
+class JCarFormFieldIdLookup extends JFormFieldPlugins
 {
     protected $type = 'JCar.IdLookup';
 
     protected function getInput()
     {
-        JHtml::_('jquery.framework');
+        $this->lookup = "";
 
-        $typeahead = JUri::root().'/media/com_jcar/js/typeahead.js/typeahead.bundle.min.js';
+        $idLookupPlugin = "";
 
-        $url = new JUri('index.php');
-        $url->setQuery(array(
-            "option"=>"com_jcar",
-            "view"=>"item",
-            "format"=>"json",
-            "query"=>"%QUERY"));
+        $parts = explode(":", $this->value, 2);
 
-        JFactory::getDocument()->addScript($typeahead);
-        JFactory::getDocument()->addScriptDeclaration =
-<<<JS
-(function($) {
-    $(document).ready(function() {
-        var ids = new Bloodhound({
-            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
-            queryTokenizer: Bloodhound.tokenizers.whitespace,
-            //prefetch: '../data/films/post_1960.json',
-            remote: {
-                url: '{(string)$url}',
-                wildcard: '%QUERY'
-            }
-        });
+        if (count($parts) == 2) {
+            $idLookupPlugin = ArrayHelper::getValue($parts, 0);
+            $this->lookup = ArrayHelper::getValue($parts, 1);
+        }
 
-        $('#idLookup').typeahead(null, {
-            name: 'text',
-            display: 'value',
-            source: ids
-        });
-    })
-})(jQuery);
-JS;
-        //$html = JLayoutHelper::render("jspace.form.fields.asset", $this);
+        $this->options = parent::getOptions();
 
-        $html =
-<<<HTML
-<input type="text" id="idLookup" name="id"/>
-HTML;
+        $this->plugin = $idLookupPlugin;
+
+        $html = JLayoutHelper::render(
+            "jcar.form.fields.idlookup",
+            $this,
+            JPATH_ROOT."/administrator/components/com_jcar/layouts");
+
         return $html;
     }
 }

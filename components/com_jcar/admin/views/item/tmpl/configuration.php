@@ -20,7 +20,10 @@ $script  = <<<JS
             var vars = {};
 
             $(this).find(":input").each(function() {
-                if ($(this).attr("name")) {
+                console.log($(this).attr("name"));
+                if ($(this).attr("name") &&
+                    $(this).attr("name") != "idLookupPlugin" &&
+                    $(this).attr("name") != "idLookup") {
                     var matches = $(this).attr("name").match(/jform\[(.*?)\]/i);
                     var id = matches[1];
 
@@ -30,14 +33,9 @@ $script  = <<<JS
 
             var tag = "{jcar ";
 
-            if (vars["id"].indexOf(vars["plugin"]) == 0) {
-                tag += vars["id"];
-            } else {
-                tag += vars["plugin"]+":"+vars["id"];
-            }
+            tag += vars["id"];
 
             vars["id"] = null;
-            vars["plugin"] = null;
 
             $.each(vars, function(index, item) {
                 if (item != null && item != "") {
