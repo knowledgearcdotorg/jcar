@@ -36,8 +36,15 @@ JLoader::register(
                     <?php echo $bitstream->name; ?>
                 </a>
             </dt>
-            <dd><?php echo JCarHelper::formatBytes($bitstream->size, 0); ?></dd>
+
+            <?php if (($size = JCarHelper::formatBytes($bitstream->size, 0)) != 0) : ?>
+            <dd><?php echo $size; ?></dd>
+            <?php endif ; ?>
+
+            <?php if (!empty($bitstream->formatDescription)) : ?>
             <dd><?php echo $bitstream->formatDescription; ?></dd>
+            <?php endif ; ?>
+
             <?php endforeach; ?>
         </dl>
     </dd>

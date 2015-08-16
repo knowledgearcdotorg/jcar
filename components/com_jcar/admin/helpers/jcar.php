@@ -67,6 +67,12 @@ class JCarHelper
 
     public static function formatBytes($size, $precision = 2)
     {
+        $size = (int)$size;
+
+        if (!$size) {
+            return 0;
+        }
+
         $base = log($size, 1024);
         $suffixes = array('', 'k', 'M', 'G', 'T');
 

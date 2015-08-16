@@ -38,6 +38,18 @@
                     <option value="0">JNO</option>
                 </field>
             </fieldset>
+
+            <fieldset
+                name="display"
+                label="PLG_JCAR_OAI_FIELDSET_DISPLAY_LABEL">
+                <field
+                    name="exclude_bundles"
+                    type="text"
+                    label="PLG_JCAR_OAI_FIELD_EXCLUDE_BUNDLES_LABEL"
+                    description="PLG_JCAR_OAI_FIELD_EXCLUDE_BUNDLES_DESC"
+                    size="40"
+                    class="inputbox"/>
+            </fieldset>
         </fields>
     </config>
 </extension>

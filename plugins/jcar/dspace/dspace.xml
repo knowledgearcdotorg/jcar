@@ -39,6 +39,18 @@
                     label="PLG_JCAR_DSPACE_REST_SECRET_LABEL"
                     description="PLG_JCAR_DSPACE_REST_SECRET_DESC"/>
             </fieldset>
+
+            <fieldset
+                name="display"
+                label="PLG_JCAR_DSPACE_FIELDSET_DISPLAY_LABEL">
+                <field
+                    name="exclude_bundles"
+                    type="text"
+                    label="PLG_JCAR_DSPACE_FIELD_EXCLUDE_BUNDLES_LABEL"
+                    description="PLG_JCAR_DSPACE_FIELD_EXCLUDE_BUNDLES_DESC"
+                    size="40"
+                    class="inputbox"/>
+            </fieldset>
         </fields>
     </config>
 </extension>

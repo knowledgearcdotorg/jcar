@@ -8,6 +8,8 @@ defined('_JEXEC') or die;
 
 use \Joomla\Utilities\ArrayHelper;
 
+\JLoader::import('joomla.filesystem.file');
+
 JLoader::register('JCarHelper', JPATH_ROOT.'/administrator/components/com_jcar/helpers/jcar.php');
 
 /**
@@ -355,6 +357,8 @@ class PlgJCarOai extends JPlugin
      */
     private function getBundles($item)
     {
+        $excludeBundles = array_filter(explode(",", $this->params->get('exclude_bundles')));
+
         $url = new JUri($this->params->get('oai_url'));
 
         $query = array(
@@ -371,61 +375,60 @@ class PlgJCarOai extends JPlugin
         if ($response->code === 200) {
             $xml = new SimpleXMLElement($response->body);
 
-            $default = 'http://www.openarchives.org/OAI/2.0/';
-            $atom = 'http://www.w3.org/2005/Atom';
-            $oreatom = 'http://www.openarchives.org/ore/atom/';
-            $rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
-            $dcterms = 'http://purl.org/dc/terms/';
+            foreach ($xml->getDocNamespaces(true) as $prefix=>$namespace) {
+                if (strlen($prefix) == 0) {
+                    $prefix = "default";
+                }
 
-            $xml->registerXPathNamespace('default', $default);
-            $xml->registerXPathNamespace('atom', $atom);
-            $xml->registerXPathNamespace('oreatom', $oreatom);
-            $xml->registerXPathNamespace('rdf', $rdf);
-            $xml->registerXPathNamespace('dcterms', $dcterms);
+                $xml->registerXPathNamespace($prefix, $namespace);
+            }
 
-            $aggregates = '//atom:link'.
-                '[@rel="http://www.openarchives.org/ore/terms/aggregates"]';
+            $description = '//oreatom:triples/rdf:Description';
 
-            $links = $xml->xpath($aggregates);
+            $links = $xml->xpath($description);
 
             foreach ($links as $link) {
-                $attrs = array();
+                $href = $link->attributes("rdf", true)->about;
 
-                foreach($link->attributes() as $key=>$value){
-                    $attrs[$key] = trim($value);
+                if (count($link->xpath("dcterms:description"))) {
+                    $derivative = $link->xpath("dcterms:description");
+                    $derivative = (string)array_shift($derivative);
+
+                    if (count($excludeBundles) == 0 ||
+                        array_search($derivative, $excludeBundles) !== false) {
+                        $derivative = JString::strtolower($derivative);
+
+                        $bitstream = new stdClass();
+                        $bitstream->url = urldecode($href);
+
+                        $aggregates = '//atom:link[@href="'.$href.'"]';
+
+                        $node = $xml->xpath($aggregates);
+
+                        $attrs = array();
+
+                        if (count($node)) {
+                            $attrs = iterator_to_array($node[0]->attributes());
+                        }
+
+                        $name = ArrayHelper::getValue($attrs, 'title', JFile::getName($href), 'string');
+                        $type = ArrayHelper::getValue($attrs, 'type', null, 'string');
+                        $size = ArrayHelper::getValue($attrs, 'length', null, 'int');
+
+                        $bitstream->name = $name;
+                        $bitstream->mimeType = $type;
+                        $bitstream->size = $size;
+                        $bitstream->formatDescription = $type;
+
+                        if (!array_key_exists($derivative, $data)) {
+                            $data[$derivative] = new stdClass();
+                            $data[$derivative]->name = $derivative;
+                            $data[$derivative]->bitstreams = array();
+                        }
+
+                        $data[$derivative]->bitstreams[] = $bitstream;
+                    }
                 }
-
-                $href = ArrayHelper::getValue($attrs, 'href', null, 'string');
-                $name = ArrayHelper::getValue($attrs, 'title', null, 'string');
-                $type = ArrayHelper::getValue($attrs, 'type', null, 'string');
-                $size = ArrayHelper::getValue($attrs, 'length', null, 'int');
-
-                $bitstream = new stdClass();
-                $bitstream->url = urldecode($href);
-                $bitstream->name = $name;
-                $bitstream->mimeType = $type;
-                $bitstream->size = $size;
-                $bitstream->formatDescription = $type;
-
-                $description =
-                    '//oreatom:triples/rdf:Description[@rdf:about="'.
-                    $bitstream->url.'"]/dcterms:description';
-
-                $derivatives = $xml->xpath($description);
-                $derivative = strtolower(
-                    ArrayHelper::getValue(
-                        $derivatives,
-                        0,
-                        'original',
-                        'string'));
-
-                if (!array_key_exists($derivative, $data)) {
-                    $data[$derivative] = new stdClass();
-                    $data[$derivative]->name = $derivative;
-                    $data[$derivative]->bitstreams = array();
-                }
-
-                $data[$derivative]->bitstreams[] = $bitstream;
             }
 
             return $data;

@@ -476,7 +476,15 @@ class PlgJCarDSpace extends JPlugin
      */
     private function getBundles($item)
     {
-        $url = $this->params->get('rest_url').'/items/'.$item.'/bundles.json';
+        $url = $this->params->get('rest_url');
+        $url .= '/items/'.$item.'/bundles.json';
+
+        $url = new JUri($url);
+
+        if ($excludeBundles = $this->params->get('exclude_bundles', null)) {
+            $url->setVar('type', $excludeBundles);
+        }
+
         JLog::add($url, JLog::DEBUG, 'jcardspace');
 
         $http = JHttpFactory::getHttp();
