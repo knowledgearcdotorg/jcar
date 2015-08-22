@@ -1,2 +1,4 @@
+id=jcar
 src=.
 path.joomla=/var/www/html/
+package.extensions=com_jcar,plg_content_jcar,plg_editor-xtd_jcar
