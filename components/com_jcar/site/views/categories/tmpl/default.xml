@@ -5,4 +5,19 @@
             <![CDATA[COM_JCAR_CATEGORIES_VIEW_DEFAULT_DESC]]>
         </message>
     </layout>
+
+    <fields name="request">
+        <fieldset
+            name="request">
+            <field
+                name="plugin"
+                type="plugins"
+                folder="jcar"
+                default=""
+                label="COM_JCAR_FIELD_SELECT_PLUGIN_LABEL"
+                description="COM_JCAR_FIELD_SELECT_PLUGIN_DESC">
+                <option value="">COM_JCAR_NO_LIMIT</option>
+            </field>
+        </fieldset>
+    </fields>
 </metadata>

@@ -7,4 +7,14 @@
             <![CDATA[COM_JCAR_CATEGORIES_VIEW_DSPACE_COMMUNITIES_DESC]]>
         </message>
     </layout>
+
+    <fields name="request">
+        <fieldset
+            name="request">
+            <field
+                name="plugin"
+                type="hidden"
+                default="dspace"/>
+        </fieldset>
+    </fields>
 </metadata>

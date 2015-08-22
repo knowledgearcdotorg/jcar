@@ -15,14 +15,27 @@ class JCarModelCategories extends JModelList
 {
     protected $items = null;
 
+    protected function populateState($ordering = null, $direction = null)
+    {
+        parent::populateState($ordering, $direction);
+
+        $app = JFactory::getApplication();
+
+        $plugin = $app->input->getCmd('plugin', null);
+
+        $this->setState('plugin', $plugin);
+    }
+
     public function getItems()
     {
         if ($this->items === null) {
             $this->items = array();
         }
 
+        $plugin = $this->getState('plugin');
+
         $dispatcher = JEventDispatcher::getInstance();
-        JPluginHelper::importPlugin('jcar');
+        JPluginHelper::importPlugin('jcar', $plugin);
 
         // Trigger the data preparation event.
         $responses = $dispatcher->trigger('onJCarCategoriesRetrieve');
