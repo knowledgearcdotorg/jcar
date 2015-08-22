@@ -2,12 +2,12 @@
 <extension version="3.3" type="plugin" group="jcar" method="upgrade">
     <name>plg_jcar_dspace</name>
     <author>KnowledgeArc</author>
-    <creationDate>2015/04/21</creationDate>
+    <creationDate>2015-08-20</creationDate>
     <copyright>Copyright (C) 2015 KnowledgeArc Ltd. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>development@knowledgearc.com</authorEmail>
     <authorUrl>www.knowledgearc.org</authorUrl>
-    <version>0.1.0</version>
+    <version>1.0.0</version>
     <description>PLG_JCAR_DSPACE_XML_DESCRIPTION</description>
 
     <files>
