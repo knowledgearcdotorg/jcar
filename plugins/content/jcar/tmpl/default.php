@@ -30,7 +30,11 @@ JLoader::register(
     <dd>
         <dl>
             <?php foreach ($bundle->bitstreams as $bitstream) : ?>
-            <dt><?php echo $bitstream->name; ?></dt>
+            <dt>
+                <a href="<?php echo JRoute::_((string)$bitstream->url); ?>">
+                    <?php echo $bitstream->name; ?>
+                </a>
+            </dt>
             <dd><?php echo JCarHelper::formatBytes($bitstream->size, 0); ?></dd>
             <dd><?php echo $bitstream->formatDescription; ?></dd>
             <?php endforeach; ?>
