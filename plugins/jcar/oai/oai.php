@@ -121,7 +121,11 @@ class PlgJCarOai extends JPlugin
 
         $xml = $this->getRecordList();
 
-        $records = iterator_to_array($xml->ListRecords->record, 0);
+        $records = array();
+
+        if (count($xml->ListRecords->record)) {
+            $records = iterator_to_array($xml->ListRecords->record, 0);
+        }
 
         foreach ($records as $record) {
             $item = new stdClass();
