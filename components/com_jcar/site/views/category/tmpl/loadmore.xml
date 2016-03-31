@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+    <layout
+        title="COM_JCAR_CATEGORY_VIEW_LOADMORE_TITLE"
+        option="COM_JCAR_CATEGORY_VIEW_LOADMORE_OPTION">
+        <message>
+            <![CDATA[COM_JCAR_CATEGORY_VIEW_LOADMORE_DESC]]>
+        </message>
+    </layout>
+
+    <fields name="request">
+        <fieldset
+            name="request">
+            <field
+                name="id"
+                type="text"
+                label="COM_JCAR_FIELD_SELECT_ID_LABEL"
+                required="true"
+                edit="true"
+                clear="false"
+                description="COM_JCAR_FIELD_SELECT_ID_DESC"/>
+        </fieldset>
+    </fields>
+</metadata>
