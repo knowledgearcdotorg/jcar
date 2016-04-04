@@ -8,7 +8,9 @@
         </message>
     </layout>
 
-    <fields name="request">
+    <fields
+        name="request"
+        addfieldpath="administrator/components/com_jcar/models/fields">
         <fieldset
             name="request">
             <field
@@ -19,6 +21,13 @@
                 edit="true"
                 clear="false"
                 description="COM_JCAR_FIELD_SELECT_ID_DESC"/>
+            <field
+                name="id"
+                type="jcar.idlookup"
+                folder="jcar"
+                label="COM_JCAR_CATEGORY_ID_TITLE"
+                required="true"
+                placeholder="Specify identifier..."/>
         </fieldset>
     </fields>
 </metadata>
