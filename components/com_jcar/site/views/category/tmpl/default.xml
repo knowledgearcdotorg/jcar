@@ -11,7 +11,7 @@
             name="request">
             <field
                 name="id"
-                type="text"
+                type="jcar.idlookup"
                 label="COM_JCAR_FIELD_SELECT_ID_LABEL"
                 required="true"
                 edit="true"

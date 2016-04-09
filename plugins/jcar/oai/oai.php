@@ -315,7 +315,7 @@ class PlgJCarOai extends JPlugin
 
                     foreach ($tags as $tag) {
                         if (JString::trim((string)$tag)) {
-                            $key = $prefix.':'.(string)$tag->getName();
+                            $key = $prefix.'.'.(string)$tag->getName();
 
                             $values = ArrayHelper::getValue($metadata, $key);
 

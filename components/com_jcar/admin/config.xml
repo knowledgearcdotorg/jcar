@@ -1,3 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
+    <fieldset
+        name="sef"
+        label="COM_JCAR_CONFIG_SEFGENERATION_LABEL"
+        description="COM_JCAR_CONFIG_SEFGENERATION_DESC">
+        <field
+            name="parent_id"
+            type="menuitem"
+            label="COM_JCAR_CONFIG_SEFGENERATION_PARENTID_LABEL"
+            description="COM_JCAR_CONFIG_SEFGENERATION_PARENTID_DESC"
+            class="input-large"/>
+    </fieldset>
 </config>

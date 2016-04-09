@@ -36,7 +36,7 @@ class JCarModelItem extends JModelItem
     {
         $pk = (!empty($pk)) ? $pk : $this->getState('item.id');
 
-        if ($this->item === null) {
+        if ($this->item !== null) {
             $this->item = array();
         }
 
@@ -91,5 +91,77 @@ class JCarModelItem extends JModelItem
         }
 
         return JArrayHelper::getValue($this->item, $pk);
+    }
+
+    /**
+     * Generates a menu item based on the JCar item's title.
+     *
+     * By referencing the JCar item using a menu item, Joomla will be able to
+     * generate a search engine-friendly url.
+     *
+     * @return  mixed  The menu item id if a menu item is generated, or false
+     * if the menu item already exists.
+     */
+    public function generateSefMenuItem()
+    {
+        $url = new JUri('index.php');
+        $url->setVar("option", "com_jcar");
+        $url->setVar("view", "item");
+        $url->setVar("id", str_replace('/', '%2F', $this->getState('item.id')));
+
+        $item = $this->getItem();
+
+        $menu = JMenu::getInstance('site');
+
+        if ($menu->getItems(array("link"), array((string)$url), true)) {
+            return false;
+        }
+
+        $component = JComponentHelper::getComponent('com_jcar');
+        $parentId = $component->params->get('parent_id');
+        $parentMenuItem = $menu->getItem($parentId);
+
+        $count = 0;
+        $suffix = "";
+        $title = reset(JArrayHelper::getValue($item->metadata, "dc.title"));
+
+        // check to see whether any other menu items share the same name.
+        do {
+            $alias = JApplicationHelper::stringURLSafe($title.$suffix);
+            $menuItems = $menu->getItems(
+                array("alias", "parent_id"),
+                array($alias, $parentMenuItem->id));
+
+            if (count($menuItems)) {
+                $count++;
+                $suffix = " ".$count;
+            } else {
+                $exists = false;
+            }
+        } while ($exists);
+
+        $title = $title.$suffix;
+
+        $menuItem = array(
+            'menutype'=>$parentMenuItem->menutype,
+            'title'=>$title,
+            'type'=>'component',
+            'component_id'=>10089,
+            'link'=>'index.php?option=com_jcar&view=item&id='.$this->getState('item.id'),
+            'language'=>'*',
+            'published'=>1,
+            'parent_id'=>$parentMenuItem->id
+        );
+
+        $menuTable = JTable::getInstance('Menu', 'JTable', array());
+
+        $menuTable->setLocation($parentMenuItem->id, 'last-child');
+
+        if (!$menuTable->save($menuItem)) {
+            throw new Exception($menuTable->getError());
+            return false;
+        }
+
+        return $menuTable->id;
     }
 }
