@@ -7,6 +7,8 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 defined('_JEXEC') or die;
+
+JFactory::getDocument()->addScript(JUri::root().'/media/com_jcar/js/jcar.js');
 ?>
 
 <section id="jcarCategory">
