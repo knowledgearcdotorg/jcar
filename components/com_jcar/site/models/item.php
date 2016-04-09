@@ -104,6 +104,12 @@ class JCarModelItem extends JModelItem
      */
     public function generateSefMenuItem()
     {
+        $component = JComponentHelper::getComponent('com_jcar');
+
+        if (!(int)$component->params->get('sef_generate', 0)) {
+            return false;
+        }
+
         $url = new JUri('index.php');
         $url->setVar("option", "com_jcar");
         $url->setVar("view", "item");
@@ -117,9 +123,13 @@ class JCarModelItem extends JModelItem
             return false;
         }
 
-        $component = JComponentHelper::getComponent('com_jcar');
-        $parentId = $component->params->get('parent_id');
+        $parentId = $component->params->get('sef_parent_id');
         $parentMenuItem = $menu->getItem($parentId);
+
+        if (is_null($parentMenuItem)) {
+            throw new Exception("Invalid parent menu item.");
+            return false;
+        }
 
         $count = 0;
         $suffix = "";
@@ -146,7 +156,7 @@ class JCarModelItem extends JModelItem
             'menutype'=>$parentMenuItem->menutype,
             'title'=>$title,
             'type'=>'component',
-            'component_id'=>10089,
+            'component_id'=>$component->id,
             'link'=>'index.php?option=com_jcar&view=item&id='.$this->getState('item.id'),
             'language'=>'*',
             'published'=>1,

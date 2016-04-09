@@ -5,7 +5,17 @@
         label="COM_JCAR_CONFIG_SEFGENERATION_LABEL"
         description="COM_JCAR_CONFIG_SEFGENERATION_DESC">
         <field
-            name="parent_id"
+            name="sef_generate"
+            type="radio"
+            default="0"
+            label="COM_JCAR_CONFIG_SEFGENERATION_GENERATE_LABEL"
+            description="COM_JCAR_CONFIG_SEFGENERATION_GENERATE_DESC"
+            class="btn-group">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        <field
+            name="sef_parent_id"
             type="menuitem"
             label="COM_JCAR_CONFIG_SEFGENERATION_PARENTID_LABEL"
             description="COM_JCAR_CONFIG_SEFGENERATION_PARENTID_DESC"
