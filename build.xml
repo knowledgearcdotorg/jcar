@@ -33,10 +33,8 @@
     </target>
 
     <target name="deploy_extension" hidden="true">
-        <echo message="test 1"/>
         <switch value="${path}">
             <case value="components/${directory}">
-                <echo message="test 2"/>
                 <phingcall target="deploy_component"/>
             </case>
 
@@ -49,9 +47,26 @@
             </case>
 
             <case value="plugins/${directory}">
-                <echo message="test 3"/>
                 <phingcall target="deploy_plugins"/>
             </case>
+
+            <!-- windows \ variations -->
+            <case value="components\${directory}">
+                <phingcall target="deploy_component"/>
+            </case>
+
+            <case value="libraries\${directory}">
+                <phingcall target="deploy_library"/>
+            </case>
+
+            <case value="modules\${directory}">
+                <phingcall target="deploy_module"/>
+            </case>
+
+            <case value="plugins\${directory}">
+                <phingcall target="deploy_plugins"/>
+            </case>
+            
             <default/>
         </switch>
     </target>
