@@ -33,8 +33,10 @@
     </target>
 
     <target name="deploy_extension" hidden="true">
+        <echo message="test 1"/>
         <switch value="${path}">
             <case value="components/${directory}">
+                <echo message="test 2"/>
                 <phingcall target="deploy_component"/>
             </case>
 
@@ -47,6 +49,7 @@
             </case>
 
             <case value="plugins/${directory}">
+                <echo message="test 3"/>
                 <phingcall target="deploy_plugins"/>
             </case>
             <default/>
