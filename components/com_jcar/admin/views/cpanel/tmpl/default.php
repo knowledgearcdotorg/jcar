@@ -16,4 +16,5 @@ defined('_JEXEC') or die;
     <?php else : ?>
     <div id="j-main-container">
     <?php endif;?>
+    <?php echo JText::_("COM_JCAR_CPANEL_INTRO"); ?>
 </div>
