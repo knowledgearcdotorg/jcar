@@ -9,6 +9,13 @@
 defined('_JEXEC') or die;
 
 JFactory::getDocument()->addScript(JUri::root().'/media/com_jcar/js/jcar.js');
+
+$nextPage = $this->item->pagination->getData()->next->link;
+if ($nextPage) :
+    $url = new JUri($nextPage);
+    $url->setVar("format", "json");
+    $nextPage = (string)$url;
+endif;
 ?>
 
 <section id="jcarCategory">
@@ -33,10 +40,10 @@ JFactory::getDocument()->addScript(JUri::root().'/media/com_jcar/js/jcar.js');
 
     <footer>
 
-        <?php if ($this->item->pagination->getData()->next->link) : ?>
+        <?php if ($nextPage) : ?>
         <button
             class="jcar-load-more"
-            data-url="<?php echo $this->item->pagination->getData()->next->link; ?>">
+            data-url="<?php echo $nextPage; ?>">
             <?php echo JText::_('COM_JCAR_LOADMORE_BUTTON'); ?>
         </button>
         <?php endif; ?>

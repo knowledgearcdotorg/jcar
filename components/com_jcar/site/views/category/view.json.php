@@ -28,8 +28,13 @@ class JCarViewCategory extends JViewLegacy
 
         $pagination = $this->item->pagination;
 
-        $this->item->pagination->pagesPrevious = $pagination->getData()->previous->link;
-        $this->item->pagination->pagesNext = $pagination->getData()->next->link;
+        $url = new JUri($pagination->getData()->previous->link);
+        $url->setVar("format", "json");
+        $this->item->pagination->pagesPrevious = (string)$url;
+
+        $url = new JUri($pagination->getData()->next->link);
+        $url->setVar("format", "json");
+        $this->item->pagination->pagesNext = (string)$url;
 
         echo json_encode($this->item);
     }
