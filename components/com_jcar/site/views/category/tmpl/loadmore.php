@@ -8,7 +8,8 @@
  */
 defined('_JEXEC') or die;
 
-JFactory::getDocument()->addScript(JUri::root().'/media/com_jcar/js/jcar.js');
+JHtml::_('bootstrap.framework');
+JFactory::getDocument()->addScript(JUri::root().'media/com_jcar/js/jcar.js');
 
 $nextPage = $this->item->pagination->getData()->next->link;
 if ($nextPage) :

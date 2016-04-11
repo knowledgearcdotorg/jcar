@@ -49,6 +49,24 @@
             <case value="plugins\${directory}">
                 <phingcall target="deploy_plugins"/>
             </case>
+
+            <!-- windows \ variations -->
+            <case value="components\${directory}">
+                <phingcall target="deploy_component"/>
+            </case>
+
+            <case value="libraries\${directory}">
+                <phingcall target="deploy_library"/>
+            </case>
+
+            <case value="modules\${directory}">
+                <phingcall target="deploy_module"/>
+            </case>
+
+            <case value="plugins\${directory}">
+                <phingcall target="deploy_plugins"/>
+            </case>
+            
             <default/>
         </switch>
     </target>
