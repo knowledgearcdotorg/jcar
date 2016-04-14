@@ -27,7 +27,7 @@ endif;
         <?php echo $this->item->pagination->getResultsCounter(); ?>
     </header>
 
-    <articles>
+    <articles id="jcar-lists">
 
         <?php foreach ($this->item->items as $item) : ?>
 
@@ -38,6 +38,11 @@ endif;
         <?php endforeach; ?>
 
     </articles>
+    <hr />
+    <article id="jcar-lists-test" style="background: yellow;">
+        <h1>Lists coming from AJAX</h1>
+        
+    </article>
 
     <footer>
 
