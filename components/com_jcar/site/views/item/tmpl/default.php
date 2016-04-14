@@ -12,41 +12,42 @@ JLoader::register(
     'JCarHelper',
     JPATH_ROOT.'/administrator/components/com_jcar/helpers/jcar.php');
 ?>
+<section id="jcarItem">
+    <dl>
+        <?php foreach ($this->item->metadata as $key=>$values) : ?>
+        <dt><?php echo $key; ?></dt>
 
-<dl>
-    <?php foreach ($this->item->metadata as $key=>$values) : ?>
-    <dt><?php echo $key; ?></dt>
+        <?php foreach ($values as $value) : ?>
+        <dd><?php echo $value; ?></dd>
+        <?php endforeach; ?>
 
-    <?php foreach ($values as $value) : ?>
-    <dd><?php echo $value; ?></dd>
-    <?php endforeach; ?>
+        <?php endforeach; ?>
+    </dl>
 
-    <?php endforeach; ?>
-</dl>
+    <dl>
+        <?php foreach ($this->item->bundles as $bundle) : ?>
+        <dt><?php echo $bundle->name; ?></dt>
 
-<dl>
-    <?php foreach ($this->item->bundles as $bundle) : ?>
-    <dt><?php echo $bundle->name; ?></dt>
+        <dd>
+            <dl>
+                <?php foreach ($bundle->bitstreams as $bitstream) : ?>
+                <dt>
+                    <a href="<?php echo JRoute::_((string)$bitstream->url); ?>">
+                        <?php echo $bitstream->name; ?>
+                    </a>
+                </dt>
 
-    <dd>
-        <dl>
-            <?php foreach ($bundle->bitstreams as $bitstream) : ?>
-            <dt>
-                <a href="<?php echo JRoute::_((string)$bitstream->url); ?>">
-                    <?php echo $bitstream->name; ?>
-                </a>
-            </dt>
+                <?php if (($size = JCarHelper::formatBytes($bitstream->size, 0)) != 0) : ?>
+                <dd><?php echo $size; ?></dd>
+                <?php endif ; ?>
 
-            <?php if (($size = JCarHelper::formatBytes($bitstream->size, 0)) != 0) : ?>
-            <dd><?php echo $size; ?></dd>
-            <?php endif ; ?>
+                <?php if (!empty($bitstream->formatDescription)) : ?>
+                <dd><?php echo $bitstream->formatDescription; ?></dd>
+                <?php endif ; ?>
 
-            <?php if (!empty($bitstream->formatDescription)) : ?>
-            <dd><?php echo $bitstream->formatDescription; ?></dd>
-            <?php endif ; ?>
-
-            <?php endforeach; ?>
-        </dl>
-    </dd>
-    <?php endforeach; ?>
-</dl>
+                <?php endforeach; ?>
+            </dl>
+        </dd>
+        <?php endforeach; ?>
+    </dl>
+</section>
