@@ -5,7 +5,7 @@
         $(".jcar-load-more").click(function (e) {
             //console.log("before running loop: " + getURL);
             if (getURL === "?format=json") {
-                $(".jcar-load-more").attr("disabled", "disabled").html("No more data to dispaly");
+                $(".jcar-load-more").attr("disabled", "disabled").html("No more data to display");
             }
             else {
                 $.get(getURL, function (data) {
