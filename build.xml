@@ -34,19 +34,19 @@
 
   <target name="deploy_extension" hidden="true">
         <switch value="${path}">
-            <case value="components\${directory}">
+            <case value="components/${directory}">
                 <phingcall target="deploy_component"/>
             </case>
 
-            <case value="libraries\${directory}">
+            <case value="libraries/${directory}">
                 <phingcall target="deploy_library"/>
             </case>
 
-            <case value="modules\${directory}">
+            <case value="modules/${directory}">
                 <phingcall target="deploy_module"/>
             </case>
 
-            <case value="plugins\${directory}">
+            <case value="plugins/${directory}">
                 <phingcall target="deploy_plugins"/>
             </case>
 
@@ -66,7 +66,7 @@
             <case value="plugins\${directory}">
                 <phingcall target="deploy_plugins"/>
             </case>
-            
+
             <default/>
         </switch>
     </target>
