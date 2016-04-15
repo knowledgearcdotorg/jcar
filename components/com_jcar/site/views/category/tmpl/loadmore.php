@@ -38,12 +38,6 @@ endif;
         <?php endforeach; ?>
 
     </articles>
-    <hr />
-    <article id="jcar-lists-test" style="background: yellow;">
-        <h1>Lists coming from AJAX</h1>
-        
-    </article>
-
     <footer>
 
         <?php if ($nextPage) : ?>

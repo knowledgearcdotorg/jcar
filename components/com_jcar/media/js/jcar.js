@@ -1,60 +1,49 @@
 (function ($) {
     $(document).ready(function () {
-        // $(".jcar-load-more").click(function () {
-           (function(){
-                $.ajax({
-                type: 'GET',
-                url: "index.php/dspace-more-items-example?token=oai_dc///com_10049_25/100&amp;start=100&amp;format=json",
-                // data: data,
-                dataType: 'json',
-                success: function (response) {
-                   
-                        //console.log(response);
-                        var i;
-                        for (i = 0; i < response.items.length; i++) {
-                            var jcarDataListMarkup = '<h2><a href="dspace-more-items-example/item/' + response.items[i].id + '">' + response.items[i].name + '</a></h2>';
-                             $("#jcar-lists-test").append(jcarDataListMarkup);    
+        (function () {
+            $.get("index.php/dspace-more-items-example?token=oai_dc///com_10049_25/100&amp;start=100&amp;format=json", function (data) {
+                console.log(data);
+                var totalData = data.pagination.total;
+                console.log(totalData); //check the total number of data returned
+                // console.log(typeof totalData); //check if the returned value is number
+
+                $(".jcar-load-more").click(function (e) {
+                     e.preventDefault();
+                    var i;
+                    var totalDataCounter;
+                    for (i = 100; i < totalData; i = i + 100) {
+                        totalDataCounter = i;
                     }
-                      $(".jcar-load-more").data("url", response.pagination.pagesNext);  
-                      var myURL = $('.jcar-load-more').data("url");
-                      console.log(myURL);
-                      
-                      $(".jcar-load-more").click(function (e) { 
-                        $.ajax({
-                            type: 'GET',
-                            url: myURL,
-                            dataType: 'json',
-                            success: function (data){
-                                console.log("Genuise");
-                                 var i;
-                        for (i = 0; i < data.items.length; i++) {
-                            var jcarDataListMarkup = '<h2><a href="dspace-more-items-example/item/' + data.items[i].id + '">' + response.items[i].name + '</a></h2>';
-                             $("#jcar-lists-test").append(jcarDataListMarkup);    
-                    }
+
+                    var myURL = "index.php/dspace-more-items-example?token=oai_dc///com_10049_25/" +
+                        totalDataCounter + "&amp;start=" + totalDataCounter + "&amp;format=json";
+
+                    $.get(myURL, function (response) {
+                        var totalDataLoopCount = response.pagination.limitstart + response.items.length;
+                        // console.log(totalData);
+                        // console.log(totalDataLoopCount);
+                        // console.log(response);
+                         var dataList = response.items;                        
+                         var currentURL = $(location).attr('href');
+                            for (var j = 0; j < dataList.length; j++) {
+                                //console.log(dataList[j].name);
+                                var dataHtml = '<h2><a href="'+  currentURL + '/item/' + dataList[j].id +'">'+ dataList[j].name +'</a></h2>';   
+                                 $( "articles#jcar-lists" ).append(dataHtml);                       
                             }
-                        });
-                      });
+                           
+                        if (totalData === totalDataLoopCount) {
+                            $(".jcar-load-more").attr("disabled", "disabled").html("No more data to dispaly");
+                        } 
+                        // else {
+                        //     $(".jcar-load-more").show();                          
+                        // }
+                    });
+                });
 
-                    //   $(".jcar-load-more").click(function (e) { 
-                    //      e.preventDefault();
-                    //      var btn = $(".jcar-load-more").data("url");
-                    //       console.log(btn);
-                    //   }); 
-                     //   $(".jcar-load-more").click(function (e) { 
-                    //      e.preventDefault();
-                    //      var btn = $(".jcar-load-more").data("url");
-                    //       console.log(btn);
-                    //   }); 
-                    
-                    
-                   // console.log("pagination value" + response.pagination.pagesNext);
+            }, "json");
+        })();
 
-                   
-                }
-            });
-           }());
-           
-        // });
+
     });
 
 })(jQuery);
