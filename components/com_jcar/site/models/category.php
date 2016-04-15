@@ -62,6 +62,13 @@ class JCarModelCategory extends JModelItem
             while (($response = current($responses)) && !$valid) {
                 if ($response !== null) {
                     $valid = true;
+
+                    for ($i = 0; $i < count($response->items); $i++) {
+                        $id = $response->items[$i]->id;
+                        $url = JCarHelperRoute::getItemRoute($id);
+                        $response->items[$i]->link = $url;
+                    }
+
                     $this->item[$pk] = $response;
                 }
 
