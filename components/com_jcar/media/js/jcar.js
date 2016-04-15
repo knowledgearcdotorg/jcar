@@ -26,10 +26,10 @@
             $.get(getURL, function (data) {
                 //console.log(data);
                 var dataList = data.items;
-                var currentURL = $(location).attr('href');
+               
                 for (var j = 0; j < dataList.length; j++) {
                     //console.log(dataList[j].name);
-                    var dataHtml = '<h2><a href="' + currentURL + '/item/' + dataList[j].id + '">' + dataList[j].name + '</a></h2>';
+                    var dataHtml = '<h2><a href="' + dataList[j].link +'">' + dataList[j].name + '</a></h2>';
                     $("articles#jcar-lists").append(dataHtml);
                 }
                 var updatedURL = data.pagination.pagesNext;
