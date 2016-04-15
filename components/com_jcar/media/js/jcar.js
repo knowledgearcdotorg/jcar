@@ -24,7 +24,7 @@
             // }
             // else {
             $.get(getURL, function (data) {
-                console.log(data);
+                //console.log(data);
                 var dataList = data.items;
 
                 for (var j = 0; j < dataList.length; j++) {
