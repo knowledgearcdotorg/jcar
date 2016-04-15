@@ -41,7 +41,7 @@ endif;
     <footer>
 
         <?php if ($nextPage) : ?>
-        <div class="loader-gif"></div>
+       
         <button
             class="jcar-load-more"
             data-url="<?php echo $nextPage; ?>">

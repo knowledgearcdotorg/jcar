@@ -2,14 +2,14 @@
      $(document).ajaxStart(function () {
             //$( ".log" ).text( "Triggered ajaxStart handler." );
             //console.log("request started");
-             $(".jcar-load-more").attr("disabled", "disabled").html("Loading Records..");
-             $(".loader-gif").css("display", "block");
+             $(".jcar-load-more").attr("disabled", "disabled").html("<span class=\"loader-gif\"></span> " + "Loading Records..");
+            // $(".loader-gif").css("display", "block");
         });
         $(document).ajaxStop(function () {
             // $( ".log" ).text( "Triggered ajaxStop handler." );
             //console.log("request completed");
              $(".jcar-load-more").removeAttr("disabled").html("Load more");
-             $(".loader-gif").css("display", "none");
+            // $(".loader-gif").css("display", "none");
         });
     $(document).ready(function () {
        
