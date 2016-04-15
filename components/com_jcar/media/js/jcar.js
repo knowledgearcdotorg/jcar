@@ -1,11 +1,24 @@
 (function ($) {
+     $(document).ajaxStart(function () {
+            //$( ".log" ).text( "Triggered ajaxStart handler." );
+            //console.log("request started");
+             $(".jcar-load-more").attr("disabled", "disabled").html("Loading Records..");
+             $(".loader-gif").css("display", "block");
+        });
+        $(document).ajaxStop(function () {
+            // $( ".log" ).text( "Triggered ajaxStop handler." );
+            //console.log("request completed");
+             $(".jcar-load-more").removeAttr("disabled").html("Load more");
+             $(".loader-gif").css("display", "none");
+        });
     $(document).ready(function () {
+       
         var getURL = $(".jcar-load-more").data("url");
-        console.log("before running loop: " + getURL);
+       // console.log("before running loop: " + getURL);
 
         $(".jcar-load-more").click(function (e) {
             e.preventDefault();
-            console.log("before running inside loop: " + getURL);
+           // console.log("before running inside loop: " + getURL);
             // if (getURL === "?format=json") {
             //     $(".jcar-load-more").hide();
             // }
@@ -21,7 +34,7 @@
                 }
                 var updatedURL = data.pagination.pagesNext;
                 getURL = updatedURL;
-                console.log("end of loop: " + getURL);
+               // console.log("end of loop: " + getURL);
                 //    $(".jcar-load-more").data( "url", updatedURL);
                 //     console.log(getURL);
                 if (getURL === "?format=json") {
