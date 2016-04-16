@@ -267,7 +267,7 @@ class PlgJCarOai extends JPlugin
                 JLog::add(print_r($response, true), JLog::DEBUG, 'jcaroai');
 
                 throw new Exception(
-                    JText::_('PLG_JCAR_DSPACE_ERROR_'.$response->code),
+                    JText::_('PLG_JCAR_OAI_ERROR_'.$response->code),
                     $response->code);
             }
         }
