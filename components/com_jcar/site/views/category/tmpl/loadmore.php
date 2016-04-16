@@ -33,8 +33,6 @@ endif;
     <header>
         <h1><?php echo $this->item->name; ?></h1>
         <div><?php echo $this->item->description; ?></div>
-
-        <?php echo $this->item->pagination->getResultsCounter(); ?>
     </header>
 
     <articles id="jcar-lists">
