@@ -2,7 +2,7 @@
     $(document).ajaxStart(function () {
         //$( ".log" ).text( "Triggered ajaxStart handler." );
         //console.log("request started");
-        $(".jcar-load-more").attr("disabled", "disabled").html("<span class=\"loader-gif\"></span> " + "Loading Records..");
+        $(".jcar-load-more").attr("disabled", "disabled").html("<span class=\"loader-gif\"></span> " + $.translations.COM_JCAR_LOADING_BUTTON);
         // $(".loader-gif").css("display", "block");
     });
     $(document).ajaxStop(function () {

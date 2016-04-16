@@ -11,6 +11,16 @@ defined('_JEXEC') or die;
 JHtml::_('bootstrap.framework');
 JFactory::getDocument()->addScript(JUri::root().'media/com_jcar/js/jcar.js');
 
+$COM_JCAR_LOADING_BUTTON = JText::_('COM_JCAR_LOADING_BUTTON');
+
+JFactory::getDocument()->addScriptDeclaration(
+<<<JS
+(function ($) {
+$.translations = {'COM_JCAR_LOADING_BUTTON':"{$COM_JCAR_LOADING_BUTTON}"};
+})(jQuery);
+JS
+);
+
 $nextPage = $this->item->pagination->getData()->next->link;
 if ($nextPage) :
     $url = new JUri($nextPage);
@@ -41,7 +51,7 @@ endif;
     <footer>
 
         <?php if ($nextPage) : ?>
-       
+
         <button
             class="jcar-load-more"
             data-url="<?php echo $nextPage; ?>">
