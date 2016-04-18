@@ -32,7 +32,7 @@
                     var dataHtml = '<h2><a href="' + dataList[j].link + '">' + dataList[j].name + '</a></h2>';
                     $("articles#jcar-lists").append(dataHtml);
                 }
-                $("section#jcarCategory > header").html("<h1></h1><div></div>Results 1 - " + (data.pagination.limitstart + dataList.length) + " of " + data.pagination.total);
+                //$("section#jcarCategory > header").html("<h1></h1><div></div>Results 1 - " + (data.pagination.limitstart + dataList.length) + " of " + data.pagination.total);
                 var updatedURL = data.pagination.pagesNext;
                 getURL = updatedURL;
                 // console.log("end of loop: " + getURL);
