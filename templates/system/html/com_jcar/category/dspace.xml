@@ -7,4 +7,18 @@
             <![CDATA[COM_JCAR_CATEGORIES_VIEW_DSPACE_COMMUNITY_DESC]]>
         </message>
     </layout>
+
+    <fields name="request">
+        <fieldset
+            name="request"
+            addfieldpath="administrator/components/com_jcar/models/fields">
+            <field
+                name="id"
+                type="jcar.idlookup"
+                folder="jcar"
+                label="COM_JCAR_CATEGORY_ID_TITLE"
+                required="true"
+                placeholder="Specify identifier..."/>
+        </fieldset>
+    </fields>
 </metadata>
