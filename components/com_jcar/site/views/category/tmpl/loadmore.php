@@ -9,6 +9,7 @@
 defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.framework');
+JFactory::getDocument()->addScript(JUri::root().'templates/knowledgearchive/js/jui/mustache.min.js');
 JFactory::getDocument()->addScript(JUri::root().'media/com_jcar/js/jcar.js');
 
 $COM_JCAR_LOADING_BUTTON = JText::_('COM_JCAR_LOADING_BUTTON');
@@ -44,7 +45,17 @@ endif;
                 <?php echo $item->name; ?></a></h2>
 
         <?php endforeach; ?>
-
+        
+        <!--Mustache Template Starts-->
+        <template id="jcarListTemplate" style="backround:yellow;">
+             {{#items}}  
+            <h2><a href="{{link}}">{{name}}</a></h2>
+             {{/items}}
+        </template>
+        <!--Mustache Template Ends-->
+        <!--Insert Mustache template into html page-->
+        <div id="jcarListWrapper"></div>
+         
     </articles>
     <footer>
 
