@@ -47,11 +47,11 @@ endif;
         <?php endforeach; ?>
         
         <!--Mustache Template Starts-->
-        <template id="jcarListTemplate" style="backround:yellow;">
+        <!--<template id="jcarListTemplate" style="backround:yellow;">
              {{#items}}  
             <h2><a href="{{link}}">{{name}}</a></h2>
              {{/items}}
-        </template>
+        </template>-->
         <!--Mustache Template Ends-->
         <!--Insert Mustache template into html page-->
         <div id="jcarListWrapper"></div>
