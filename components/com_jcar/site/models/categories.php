@@ -24,6 +24,9 @@ class JCarModelCategories extends JModelList
         $plugin = $app->input->getCmd('plugin', null);
 
         $this->setState('plugin', $plugin);
+
+        $params = $app->getParams();
+        $this->setState('params', $params);
     }
 
     public function getItems()

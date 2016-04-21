@@ -11,5 +11,14 @@ defined('_JEXEC') or die;
 JLoader::register(
     'JCarHelper',
     JPATH_ROOT.'/administrator/components/com_jcar/helpers/jcar.php');
+?>
 
-echo $this->loadTemplate('category');
+<section id="jcarCategories">
+    <?php if ($this->params->get('show_page_heading')) : ?>
+    <header>
+        <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
+    <header>
+    <?php endif; ?>
+
+    <?php echo $this->loadTemplate('category'); ?>
+</section>

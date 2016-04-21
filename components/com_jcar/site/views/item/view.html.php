@@ -15,6 +15,8 @@ class JCarViewItem extends JViewLegacy
 {
     protected $item;
 
+    protected $params;
+
     /**
      * Display an item.
      *
@@ -25,6 +27,9 @@ class JCarViewItem extends JViewLegacy
     public function display($tpl = null)
     {
         $this->item = $this->get('Item');
+        $this->state = $this->get('State');
+        $this->params = $this->state->get('params');
+        
         parent::display($tpl);
     }
 }

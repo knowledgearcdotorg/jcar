@@ -11,13 +11,18 @@ defined('_JEXEC') or die;
 
 <section id="jcarCategory">
     <header>
+        <?php if ($this->params->get('show_page_heading')) : ?>
+        <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
+        <?php else : ?>
         <h1><?php echo $this->item->name; ?></h1>
+        <?php endif; ?>
+
         <div><?php echo $this->item->description; ?></div>
 
         <?php echo $this->item->pagination->getResultsCounter(); ?>
     </header>
 
-    <articles>
+    <div>
 
         <?php foreach ($this->item->items as $item) : ?>
 
@@ -27,7 +32,7 @@ defined('_JEXEC') or die;
 
         <?php endforeach; ?>
 
-    </articles>
+    </div>
 
     <footer>
 

@@ -23,6 +23,9 @@ class JCarModelCategory extends JModelItem
 
         $pk = $app->input->getString('id');
         $this->setState('category.id', $pk);
+
+        $params = $app->getParams();
+        $this->setState('params', $params);
     }
 
     public function getItem($pk = null)

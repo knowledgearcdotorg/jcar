@@ -30,6 +30,9 @@ class JCarModelItem extends JModelItem
 
         $pk = $app->input->getString('id');
         $this->setState('item.id', $pk);
+
+        $params = $app->getParams();
+        $this->setState('params', $params);
     }
 
     public function getItem($pk = null)

@@ -15,6 +15,8 @@ class JCarViewCategories extends JViewLegacy
 {
     protected $items;
 
+    protected $params;
+
     /**
      * Display all available categories.
      *
@@ -25,6 +27,8 @@ class JCarViewCategories extends JViewLegacy
     public function display($tpl = null)
     {
         $this->items = $this->get('Items');
+        $this->state = $this->get('State');
+        $this->params = $this->state->get('params');
 
         return parent::display($tpl);
     }
