@@ -3,7 +3,8 @@
     <fieldset
         name="sef"
         label="COM_JCAR_CONFIG_SEFGENERATION_LABEL"
-        description="COM_JCAR_CONFIG_SEFGENERATION_DESC">
+        description="COM_JCAR_CONFIG_SEFGENERATION_DESC"
+        addfieldpath="administrator/components/com_jcar/models/fields">
         <field
             name="sef_generate"
             type="radio"
@@ -15,10 +16,20 @@
             <option value="1">JYES</option>
         </field>
         <field
+            name="sef_menutype"
+            type="jcar.menu"
+            label="COM_JCAR_CONFIG_SEFGENERATION_MENUTYPE_LABEL"
+            description="COM_JCAR_CONFIG_SEFGENERATION_MENUTYPE_DESC"
+            size="1" />
+        <field
             name="sef_parent_id"
-            type="menuitem"
+            type="jcar.menuparent"
             label="COM_JCAR_CONFIG_SEFGENERATION_PARENTID_LABEL"
             description="COM_JCAR_CONFIG_SEFGENERATION_PARENTID_DESC"
-            class="input-large"/>
+            default="1"
+            filter="int"
+            size="1">
+            <option value="1">COM_JCAR_CONFIG_SEFGENERATION_PARENTID_ROOT</option>
+        </field>
     </fieldset>
 </config>
