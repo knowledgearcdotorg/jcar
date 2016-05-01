@@ -77,6 +77,13 @@ class JCarRouter extends JComponentRouterBase
             }
         }
 
+        if ($view == 'asset') {
+            $segments[] = $query['name'];
+
+            unset($query['format']);
+            unset($query['name']);
+        }
+
         return $segments;
     }
 
@@ -108,6 +115,14 @@ class JCarRouter extends JComponentRouterBase
         } else {
             $vars['view'] = array_shift($segments);
             $vars['id'] = array_shift($segments);
+        }
+
+        if ($vars['view'] == 'asset') {
+            $vars['format'] = 'raw';
+
+            if ($name = array_shift($segments)) {
+                $vars['name'] = $name;
+            }
         }
 
         return $vars;

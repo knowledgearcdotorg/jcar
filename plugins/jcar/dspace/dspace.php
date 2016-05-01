@@ -509,6 +509,7 @@ class PlgJCarDSpace extends JPlugin
                                 'view'=>'asset',
                                 'format'=>'raw',
                                 'id'=>$this->_name.':'.$bitstream->id,
+                                'name'=>$bitstream->name,
                                 'Itemid'=>JFactory::getApplication()->input->getInt('Itemid')));
                     } else {
                         $url = new JUri(
