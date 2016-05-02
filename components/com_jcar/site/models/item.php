@@ -126,7 +126,7 @@ class JCarModelItem extends JModelItem
             return false;
         }
 
-        $parentId = $component->params->get('sef_parent_id');
+        $parentId = $component->params->get('parent_id');
         $parentMenuItem = $menu->getItem($parentId);
 
         if (is_null($parentMenuItem)) {
