@@ -3,7 +3,7 @@
     <field
         name="rest_url"
         type="text"
-        showon="plugin:dspace"
+        showon="idLookupPlugin:dspace"
         label="PLG_JCAR_DSPACE_REST_URL_LABEL"
         description="PLG_JCAR_DSPACE_REST_URL_DESC"
         filter="string"
@@ -12,7 +12,7 @@
     <field
         name="rest_key"
         type="text"
-        showon="plugin:dspace"
+        showon="idLookupPlugin:dspace"
         label="PLG_JCAR_DSPACE_REST_KEY_LABEL"
         description="PLG_JCAR_DSPACE_REST_KEY_DESC"
         filter="string"
@@ -21,7 +21,7 @@
     <field
         name="rest_secret"
         type="text"
-        showon="plugin:dspace"
+        showon="idLookupPlugin:dspace"
         label="PLG_JCAR_DSPACE_REST_SECRET_LABEL"
         description="PLG_JCAR_DSPACE_REST_SECRET_DESC"
         filter="string"

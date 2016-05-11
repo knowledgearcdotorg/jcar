@@ -59,7 +59,7 @@ JFactory::getDocument()->addScriptDeclaration($script);
 
     <?php
     foreach ($this->form->getFieldset() as $field) :
-        $classnames = 'control-group';
+        /*$classnames = 'control-group';
         $rel = '';
         $showon = $this->form->getFieldAttribute($field->fieldname, 'showon');
 
@@ -68,6 +68,8 @@ JFactory::getDocument()->addScriptDeclaration($script);
             $showon = explode(':', $showon, 2);
             $classnames .= ' showon_'.implode(' showon_', explode(',', $showon[1]));
             $rel = ' rel="showon_'.$id.'['.$showon[0].']"';
+
+            echo $rel;
         endif;
     ?>
 
@@ -82,6 +84,12 @@ JFactory::getDocument()->addScriptDeclaration($script);
     </div>
 
     <?php
+    */
+        $html = $field->renderField();
+
+        $html = str_replace('"field":"jform[idLookupPlugin]"', '"field":"idLookupPlugin"', $html);
+
+        echo $html;
     endforeach;
     ?>
 

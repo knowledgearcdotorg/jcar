@@ -1,7 +1,7 @@
 <?php
 defined('JPATH_BASE') or die;
 
-JHtml::_('jquery.framework');
+JHtml::_('formbehavior.chosen', 'select');
 
 $typeahead = JUri::root().'/media/com_jcar/js/typeahead.js/typeahead.bundle.min.js';
 

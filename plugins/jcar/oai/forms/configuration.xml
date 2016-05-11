@@ -3,7 +3,7 @@
     <field
         name="oai_url"
         type="text"
-        showon="plugin:oai"
+        showon="idLookupPlugin:oai"
         label="PLG_JCAR_OAI_REQUEST_URL_LABEL"
         description="PLG_JCAR_OAI_REQUEST_URL_DESC"
         filter="string"
