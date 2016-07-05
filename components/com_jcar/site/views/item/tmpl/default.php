@@ -8,6 +8,14 @@
  */
 defined('_JEXEC') or die;
 
+use \Joomla\Utilities\ArrayHelper;
+
+JFactory::getDocument()
+    ->setMetaData("DC.title", reset(ArrayHelper::getValue($this->item->metadata, "dc.title")))
+    ->setMetaData("DC.author", reset(ArrayHelper::getValue($this->item->metadata, "dc.contributor.author")))
+    ->setMetaData("DC.issued", reset(ArrayHelper::getValue($this->item->metadata, "dc.date.issued")))
+    ->setMetaData("DC.publisher", reset(ArrayHelper::getValue($this->item->metadata, "dc.publisher")));
+
 JLoader::register(
     'JCarHelper',
     JPATH_ROOT.'/administrator/components/com_jcar/helpers/jcar.php');

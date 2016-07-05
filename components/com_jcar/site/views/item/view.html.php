@@ -29,7 +29,7 @@ class JCarViewItem extends JViewLegacy
         $this->item = $this->get('Item');
         $this->state = $this->get('State');
         $this->params = $this->state->get('params');
-        
+
         parent::display($tpl);
     }
 }
