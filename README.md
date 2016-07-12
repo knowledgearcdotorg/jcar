@@ -2,7 +2,7 @@
 
 ## Documentation
 
-User documentation is available at https://www.gitbook.com/book/knowledgearc/jcar/.
+User documentation is available at https://knowledgearc.gitbooks.io/jcar.
 
 ## Build the project with Phing
 
