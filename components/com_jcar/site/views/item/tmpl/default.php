@@ -10,11 +10,23 @@ defined('_JEXEC') or die;
 
 use \Joomla\Utilities\ArrayHelper;
 
+$metadata = $this->item->metadata;
+
+$title = ArrayHelper::getValue($metadata, "dc.title");
+$author = ArrayHelper::getValue($metadata, "dc.contributor.author");
+$issued = ArrayHelper::getValue($metadata, "dc.date.issued");
+$publisher = ArrayHelper::getValue($metadata, "dc.publisher");
+
+$title = reset($title);
+$author = reset($author);
+$issued = reset($issued);
+$publisher = reset($publisher);
+
 JFactory::getDocument()
-    ->setMetaData("DC.title", reset(ArrayHelper::getValue($this->item->metadata, "dc.title")))
-    ->setMetaData("DC.author", reset(ArrayHelper::getValue($this->item->metadata, "dc.contributor.author")))
-    ->setMetaData("DC.issued", reset(ArrayHelper::getValue($this->item->metadata, "dc.date.issued")))
-    ->setMetaData("DC.publisher", reset(ArrayHelper::getValue($this->item->metadata, "dc.publisher")));
+    ->setMetaData("DC.title", $title)
+    ->setMetaData("DC.author", $author)
+    ->setMetaData("DC.issued", $issued)
+    ->setMetaData("DC.publisher", $publisher);
 
 JLoader::register(
     'JCarHelper',
@@ -25,7 +37,7 @@ JLoader::register(
         <?php if ($this->params->get('show_page_heading')) : ?>
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
         <?php else : ?>
-        <h1><?php echo reset(JArrayHelper::getValue($this->item->metadata, "dc.title")); ?></h1>
+        <h1><?php echo $title; ?></h1>
         <?php endif; ?>
     </header>
 
