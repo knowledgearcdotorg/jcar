@@ -126,13 +126,8 @@ class JCarModelItem extends JModelItem
             return false;
         }
 
+        $menutype = $component->params->get('menutype');
         $parentId = $component->params->get('parent_id');
-        $parentMenuItem = $menu->getItem($parentId);
-
-        if (is_null($parentMenuItem)) {
-            throw new Exception("Invalid parent menu item.");
-            return false;
-        }
 
         $count = 0;
         $suffix = "";
@@ -142,8 +137,8 @@ class JCarModelItem extends JModelItem
         do {
             $alias = JApplicationHelper::stringURLSafe($title.$suffix);
             $menuItems = $menu->getItems(
-                array("alias", "parent_id"),
-                array($alias, $parentMenuItem->id));
+                array("alias", "parent_id", "menutype"),
+                array($alias, $parentId, $menutype));
 
             if (count($menuItems)) {
                 $count++;
@@ -156,19 +151,19 @@ class JCarModelItem extends JModelItem
         $title = $title.$suffix;
 
         $menuItem = array(
-            'menutype'=>$parentMenuItem->menutype,
+            'menutype'=>$menutype,
             'title'=>$title,
             'type'=>'component',
             'component_id'=>$component->id,
             'link'=>'index.php?option=com_jcar&view=item&id='.$this->getState('item.id'),
             'language'=>'*',
             'published'=>1,
-            'parent_id'=>$parentMenuItem->id
+            'parent_id'=>$parentId
         );
 
         $menuTable = JTable::getInstance('Menu', 'JTable', array());
 
-        $menuTable->setLocation($parentMenuItem->id, 'last-child');
+        $menuTable->setLocation($parentId, 'last-child');
 
         if (!$menuTable->save($menuItem)) {
             throw new Exception($menuTable->getError());
