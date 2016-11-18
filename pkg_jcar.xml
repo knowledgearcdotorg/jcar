@@ -16,4 +16,8 @@
         <file type="plugin" id="jcar" group="content">plg_content_jcar.zip</file>
         <file type="plugin" id="jcar" group="editors-xtd">plg_editors-xtd_jcar.zip</file>
     </files>
+
+    <updateservers>
+        <server type="extension" priority="1" name="JSolr">https://raw.githubusercontent.com/knowledgearcdotorg/jcar/master/manifest.xml</server>
+    </updateservers>
 </extension>
