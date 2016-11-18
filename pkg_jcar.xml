@@ -18,6 +18,6 @@
     </files>
 
     <updateservers>
-        <server type="extension" priority="1" name="JSolr">https://raw.githubusercontent.com/knowledgearcdotorg/jcar/master/manifest.xml</server>
+        <server type="extension" priority="1" name="JCar">https://raw.githubusercontent.com/knowledgearcdotorg/jcar/master/manifest.xml</server>
     </updateservers>
 </extension>
