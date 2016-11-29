@@ -481,8 +481,8 @@ class PlgJCarDSpace extends JPlugin
 
         $url = new JUri($url);
 
-        if ($excludeBundles = $this->params->get('exclude_bundles', null)) {
-            $url->setVar('type', $excludeBundles);
+        if ($showBundles = $this->params->get('show_bundles', null)) {
+            $url->setVar('type', $showBundles);
         }
 
         JLog::add($url, JLog::DEBUG, 'jcardspace');

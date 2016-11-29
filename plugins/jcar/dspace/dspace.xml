@@ -2,12 +2,12 @@
 <extension version="3.3" type="plugin" group="jcar" method="upgrade">
     <name>plg_jcar_dspace</name>
     <author>KnowledgeArc</author>
-    <creationDate>2016-07-08</creationDate>
+    <creationDate>2016-11-29</creationDate>
     <copyright>Copyright (C) 2015-2016 KnowledgeArc Ltd. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>development@knowledgearc.com</authorEmail>
     <authorUrl>www.knowledgearc.org</authorUrl>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <description>PLG_JCAR_DSPACE_XML_DESCRIPTION</description>
 
     <files>
@@ -44,10 +44,10 @@
                 name="display"
                 label="PLG_JCAR_DSPACE_FIELDSET_DISPLAY_LABEL">
                 <field
-                    name="exclude_bundles"
+                    name="show_bundles"
                     type="text"
-                    label="PLG_JCAR_DSPACE_FIELD_EXCLUDE_BUNDLES_LABEL"
-                    description="PLG_JCAR_DSPACE_FIELD_EXCLUDE_BUNDLES_DESC"
+                    label="PLG_JCAR_DSPACE_FIELD_SHOW_BUNDLES_LABEL"
+                    description="PLG_JCAR_DSPACE_FIELD_SHOW_BUNDLES_DESC"
                     size="40"
                     class="inputbox"/>
 
