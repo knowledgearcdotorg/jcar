@@ -61,9 +61,13 @@ JLoader::register(
                 <dl>
                     <?php foreach ($bundle->bitstreams as $bitstream) : ?>
                     <dt>
+                        <?php if ($bitstream->url) : ?>
                         <a href="<?php echo JRoute::_((string)$bitstream->url); ?>">
                             <?php echo $bitstream->name; ?>
                         </a>
+                        <?php else : ?>
+                        <?php echo $bitstream->name; ?>
+                        <?php endif; ?>
                     </dt>
 
                     <?php if (($size = JCarHelper::formatBytes($bitstream->size, 0)) != 0) : ?>
