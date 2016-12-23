@@ -33,4 +33,21 @@
             <option value="1">COM_JCAR_CONFIG_SEFGENERATION_PARENTID_ROOT</option>
         </field>
     </fieldset>
+    <fieldset
+        name="assets"
+        label="COM_JCAR_CONFIG_ASSETS_LABEL"
+        description="COM_JCAR_CONFIG_ASSETS_DESC">
+        <field
+            name="inline_max_length"
+            type="text"
+            default="1000000"
+            label="COM_JCAR_CONFIG_ASSETS_INLINE_MAX_LENGTH_LABEL"
+            description="COM_JCAR_CONFIG_ASSETS_INLINE_MAX_LENGTH_DESC"/>
+        <field
+            name="inline_mimetypes"
+            type="text"
+            label="COM_JCAR_CONFIG_ASSETS_INLINE_MIMETYPES_LABEL"
+            description="COM_JCAR_CONFIG_ASSETS_INLINE_MIMETYPES_DESC"
+            default="application/pdf"/>
+    </fieldset>
 </config>

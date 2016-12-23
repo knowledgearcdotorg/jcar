@@ -7,7 +7,7 @@
     <authorUrl>http://www.knowledgearc.org</authorUrl>
     <copyright>>Copyright (C) 2015-2016 KnowledgeArc Ltd. All rights reserved.</copyright>
     <license>http://www.gnu.org/licenses/gpl-3.0.html</license>
-    <version>1.0.2</version>
+    <version>1.1.0</version>
     <description>COM_JCAR_XML_DESCRIPTION</description>
     <files folder="site">
         <folder>helpers</folder>

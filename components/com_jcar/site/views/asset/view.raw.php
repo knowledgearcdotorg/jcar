@@ -29,6 +29,8 @@ class JCarViewAsset extends JViewLegacy
     public function display($tpl = null)
     {
         $this->item = $this->get('Item');
+        $this->state = $this->get('State');
+        $this->params = $this->state->get('params');
 
         $handle = fopen((string)$this->item->url, 'rb');
 
@@ -39,21 +41,25 @@ class JCarViewAsset extends JViewLegacy
         $name = htmlentities($this->item->name);
 
         $document = JFactory::getDocument();
-        $document->setType($this->item->mimeType);
+
+        $document->setMimeEncoding($this->item->mimeType);
         $document->setTitle($name);
 
-        header("Content-Disposition: attachment; filename=\"".$name."\";");
-        header("Content-Length: ".$this->item->size);
-
-        while (!feof($handle)) {
-            $buffer = fread($handle, static::$chunksize);
-
-            echo $buffer;
-
-            ob_flush();
-            flush();
+        if ($this->params->get('inline_max_length', 0) >= $this->item->size &&
+            array_search($this->item->mimeType, explode(",", $this->params->get('inline_mimetypes'))) !== false) {
+            $disposition = 'inline';
+        } else {
+            $disposition = 'attachment';
         }
 
-        $status = fclose($handle);
+        JFactory::getApplication()
+            ->setHeader(
+                    'Content-disposition',
+                    $disposition.'; filename="'.$name.'"',
+                    true)
+            ->setHeader('Content-Length', $this->item->size, true)
+            ->setHeader('Content-type', $this->item->mimeType, true);
+
+        fpassthru($handle);
     }
 }
