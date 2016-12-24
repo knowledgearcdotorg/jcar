@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension type="component" version="3.3" method="upgrade">
     <name>com_jcar</name>
-    <creationDate>2016-11-19</creationDate>
+    <creationDate>2016-12-24</creationDate>
     <author>KnowledgeArc</author>
     <authorEmail>development@knowledgearc.com</authorEmail>
     <authorUrl>http://www.knowledgearc.org</authorUrl>
