@@ -39,7 +39,7 @@ abstract class JCarHelperRoute
 
     public static function getItemRoute($id, $language = 0)
     {
-        $needles = array('item'=>array((string)$id));
+        $needles = ['item'=>[(string)$id]];
 
         // Create the link
         $url = new JUri('index.php');
@@ -52,8 +52,22 @@ abstract class JCarHelperRoute
             $needles['language'] = $language;
         }
 
-        if ($item = self::findItem($needles)) {
-            $url->setVar('Itemid', $item);
+        $app = JFactory::getApplication();
+        $menus = $app->getMenu('site');
+        $component = JComponentHelper::getComponent('com_jcar');
+        $items = $menus->getItems(
+            ['component_id', 'link'],
+            [$component->id, 'index.php?option=com_jcar&view=item']);
+
+        if ($item = array_pop($items)) {
+            JTable::addIncludePath(JPATH_ROOT."/administrator/components/com_jcar/tables");
+            $table = JTable::getInstance('Route', 'JCarTable');
+
+            if ($table->load(['item_id'=>$id])) {
+                if ($table->id) {
+                    $url->setVar('Itemid', $item->id);
+                }
+            }
         }
 
         return (string)$url;
@@ -71,8 +85,8 @@ abstract class JCarHelperRoute
 
             $component = JComponentHelper::getComponent('com_jcar');
 
-            $attributes = array('component_id');
-            $values = array($component->id);
+            $attributes = ['component_id'];
+            $values = [$component->id];
 
             if ($language != '*') {
                 $attributes[] = 'language';
@@ -104,7 +118,7 @@ abstract class JCarHelperRoute
         }
 
         if ($needles) {
-            foreach ($needles as $view => $ids) {
+            foreach ($needles as $view=>$ids) {
                 if (isset(self::$lookup[$language][$view])) {
                     foreach ($ids as $id) {
                         if (isset(self::$lookup[$language][$view][$id])) {

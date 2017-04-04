@@ -7,8 +7,27 @@
     <authorUrl>http://www.knowledgearc.org</authorUrl>
     <copyright>>Copyright (C) 2015-2016 KnowledgeArc Ltd. All rights reserved.</copyright>
     <license>http://www.gnu.org/licenses/gpl-3.0.html</license>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <description>COM_JCAR_XML_DESCRIPTION</description>
+
+    <install>
+        <sql>
+            <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+        </sql>
+    </install>
+
+    <uninstall>
+        <sql>
+            <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
+        </sql>
+    </uninstall>
+
+    <update>
+        <schemas>
+            <schemapath type="mysql">sql/updates/mysql</schemapath>
+        </schemas>
+    </update>
+
     <files folder="site">
         <folder>helpers</folder>
         <folder>models</folder>
@@ -25,11 +44,20 @@
     <administration>
         <menu img="class:jcar">JCAR</menu>
 
+        <submenu>
+            <menu
+                link="option=com_jcar&amp;view=routes"
+                img="class:routes"
+                alt="JCar/Routes">com_jcar_routes</menu>
+        </submenu>
+
         <files folder="admin">
             <folder>controllers</folder>
             <folder>helpers</folder>
             <folder>layouts</folder>
             <folder>models</folder>
+            <folder>sql</folder>
+            <folder>tables</folder>
             <folder>views</folder>
             <filename>access.xml</filename>
             <filename>config.xml</filename>

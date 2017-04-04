@@ -8,6 +8,8 @@
  */
 defined('_JEXEC') or die;
 
+JLoader::register('JCarHelper', JPATH_ROOT.'/administrator/components/com_jcar/helpers/jcar.php');
+
 if (!JFactory::getUser()->authorise('core.manage', 'com_jcar')) {
     return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
 }

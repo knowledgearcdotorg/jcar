@@ -13,22 +13,13 @@ defined('_JEXEC') or die;
  */
 class JCarController extends JControllerLegacy
 {
-    /**
-     * Reroutes a request based on the item id.
-     */
-    public function reroute()
-    {
-        $itemId = JFactory::getApplication()->input->getInt('Itemid');
-        $this->setRedirect(JRoute::_("index.php?Itemid=".$itemId));
-    }
-
     public function display($cachable = false, $urlparams = array())
     {
         if (JFactory::getApplication()->input->getCmd('view') == 'item') {
             $model = $this->getModel('item');
 
-            if ($menuItemId = $model->generateSefMenuItem()) {
-                $this->setRedirect("index.php?option=com_jcar&task=reroute&Itemid=".$menuItemId);
+            if ($url = $model->generateSefRoute()) {
+                $this->setRedirect(JRoute::_($url));
             }
         }
 

@@ -22,7 +22,7 @@ class JCarRouter extends JComponentRouterBase
      */
     public function build(&$query)
     {
-        $segments = array();
+        $segments = [];
 
         $view = JArrayHelper::getValue($query, 'view');
         $layout = JArrayHelper::getValue($query, 'layout');
@@ -60,8 +60,18 @@ class JCarRouter extends JComponentRouterBase
             return $segments;
         }
 
-        if ($mId != $id || $mView != $view) {
-            $segments[] = str_replace('/', urlencode('%2F'), $id);
+        if ($mView == 'item') {
+            $id = str_replace('/', urlencode('%2F'), $id);
+
+            JTable::addIncludePath(JPATH_ROOT."/administrator/components/com_jcar/tables");
+            $table = JTable::getInstance('Route', 'JCarTable');
+
+            if ($table->load(['item_id'=>$id])) {
+                $segments[] = $table->alias;
+            } else {
+                $segments[] = $id;
+            }
+
             unset($query['id']);
         }
 
@@ -104,8 +114,8 @@ class JCarRouter extends JComponentRouterBase
             $mView = JArrayHelper::getValue($item->query, 'view');
             $mLayout = JArrayHelper::getValue($item->query, 'layout');
 
-            if ($mView == "categories" && count($segments) == 1) {
-                $vars['view'] = "category";
+            if (($mView == "categories" || $mView == "item") && count($segments) == 1) {
+                $vars['view'] = ($mView == "categories") ? "category" : $mView;
                 $vars['layout'] = $mLayout;
             } else {
                 $vars['view'] = array_shift($segments);
@@ -122,6 +132,18 @@ class JCarRouter extends JComponentRouterBase
 
             if ($name = array_shift($segments)) {
                 $vars['name'] = $name;
+            }
+        }
+
+        // if item, assume the id is the item's alias. Convert to id.
+        if ($vars['view'] == 'item') {
+            if ($alias = \Joomla\Utilities\ArrayHelper::getValue($vars, 'id')) {
+                JTable::addIncludePath(JPATH_ROOT."/administrator/components/com_jcar/tables");
+                $table = JTable::getInstance('Route', 'JCarTable');
+
+                if ($table->load(['alias'=>$alias])) {
+                    $vars['id'] = $table->item_id;
+                }
             }
         }
 

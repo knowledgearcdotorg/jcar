@@ -105,71 +105,70 @@ class JCarModelItem extends JModelItem
      * @return  mixed  The menu item id if a menu item is generated, or false
      * if the menu item already exists.
      */
-    public function generateSefMenuItem()
+    public function generateSefRoute()
     {
+        JModelLegacy::addIncludePath(JPATH_ROOT.'/administrator/components/com_jcar/models');
+        $model = JModelLegacy::getInstance("Route", "JCarModel", ['ignore_request'=>true]);
+
         $component = JComponentHelper::getComponent('com_jcar');
 
         if (!(int)$component->params->get('sef_generate', 0)) {
             return false;
         }
 
-        $url = new JUri('index.php');
-        $url->setVar("option", "com_jcar");
-        $url->setVar("view", "item");
-        $url->setVar("id", str_replace('/', '%2F', $this->getState('item.id')));
-
         $item = $this->getItem();
 
-        $menu = JMenu::getInstance('site');
+        $metadata = $item->metadata;
+        $titles = JArrayHelper::getValue($metadata, "dc.title", []);
+        $title = reset($titles);
 
-        if ($menu->getItems(array("link"), array((string)$url), true)) {
-            return false;
-        }
-
-        $menutype = $component->params->get('menutype');
-        $parentId = $component->params->get('parent_id');
-
+        $isNew = false;
         $count = 0;
         $suffix = "";
-        $title = reset(JArrayHelper::getValue($item->metadata, "dc.title"));
 
-        // check to see whether any other menu items share the same name.
+        // keep producing aliases until we have a unique one.
         do {
+            $unique = true;
+
             $alias = JApplicationHelper::stringURLSafe($title.$suffix);
-            $menuItems = $menu->getItems(
-                array("alias", "parent_id", "menutype"),
-                array($alias, $parentId, $menutype));
 
-            if (count($menuItems)) {
-                $count++;
-                $suffix = " ".$count;
+            $table = $model->getTable('Route');
+
+            if ($table->load(["alias"=>$alias])) {
+                if ($table->item_id !== $this->getState('item.id')) {
+                    $dates = JArrayHelper::getValue($metadata, "dc.date.issued", []);
+
+                    if (($issued = array_pop($dates)) && !$count) {
+                        $suffix = $issued;
+                    } else {
+                        $count++;
+                        $suffix = $count;
+                    }
+
+                    $unique = false;
+                }
             } else {
-                $exists = false;
+                $isNew = true;
             }
-        } while ($exists);
+        } while (!$unique);
 
-        $title = $title.$suffix;
-
-        $menuItem = array(
-            'menutype'=>$menutype,
-            'title'=>$title,
-            'type'=>'component',
-            'component_id'=>$component->id,
-            'link'=>'index.php?option=com_jcar&view=item&id='.$this->getState('item.id'),
-            'language'=>'*',
-            'published'=>1,
-            'parent_id'=>$parentId
-        );
-
-        $menuTable = JTable::getInstance('Menu', 'JTable', array());
-
-        $menuTable->setLocation($parentId, 'last-child');
-
-        if (!$menuTable->save($menuItem)) {
-            throw new Exception($menuTable->getError());
+        if (!$isNew) {
             return false;
         }
 
-        return $menuTable->id;
+        $data = [
+            "title"=>$title.$suffix,
+            "alias"=>$alias,
+            "item_id"=>$this->getState('item.id'),
+            "state"=>1,
+            "language"=>'*'
+        ];
+
+        if (!$model->save($data)) {
+            throw new Exception($model->getError());
+            return false;
+        }
+
+        return JCarHelperRoute::getItemRoute($model->getItem()->item_id);
     }
 }

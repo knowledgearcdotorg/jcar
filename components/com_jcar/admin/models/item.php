@@ -12,9 +12,7 @@ defined('_JEXEC') or die;
 use Joomla\Registry\Registry;
 
 /**
- * Model for the global configuration
- *
- * @since  3.2
+ * Model for assisting the JCar lookup form field.
  */
 class JCarModelItem extends JModelForm
 {

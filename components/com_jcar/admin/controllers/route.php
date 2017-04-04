@@ -8,6 +8,10 @@
  */
 defined('_JEXEC') or die;
 
-class JCarControllerCpanel extends JModelAdmin
+/**
+ * Controller for a single route.
+ */
+class JCarControllerRoute extends JControllerForm
 {
+
 }

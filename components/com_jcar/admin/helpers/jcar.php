@@ -26,7 +26,11 @@ class JCarHelper
      */
     public static function addSubmenu($vName)
     {
-
+        JHtmlSidebar::addEntry(
+            JText::_('COM_JCAR_SUBMENU_ROUTES'),
+            'index.php?option=com_jcar&view=routes',
+            $vName == 'routes'
+        );
     }
 
     /**
