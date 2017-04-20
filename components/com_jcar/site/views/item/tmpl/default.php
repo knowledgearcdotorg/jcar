@@ -12,10 +12,10 @@ use \Joomla\Utilities\ArrayHelper;
 
 $metadata = $this->item->metadata;
 
-$title = ArrayHelper::getValue($metadata, "dc.title");
-$author = ArrayHelper::getValue($metadata, "dc.contributor.author");
-$issued = ArrayHelper::getValue($metadata, "dc.date.issued");
-$publisher = ArrayHelper::getValue($metadata, "dc.publisher");
+$title = ArrayHelper::getValue($metadata, "dc.title", array());
+$author = ArrayHelper::getValue($metadata, "dc.contributor.author", array());
+$issued = ArrayHelper::getValue($metadata, "dc.date.issued", array());
+$publisher = ArrayHelper::getValue($metadata, "dc.publisher", array());
 
 $title = reset($title);
 $author = reset($author);
@@ -31,6 +31,8 @@ JFactory::getDocument()
 JLoader::register(
     'JCarHelper',
     JPATH_ROOT.'/administrator/components/com_jcar/helpers/jcar.php');
+
+    echo JRoute::_("index.php?option=com_jcar&view=item&id=dspace:21");
 ?>
 <section id="jcarItem">
     <header>

@@ -60,16 +60,18 @@ class JCarRouter extends JComponentRouterBase
             return $segments;
         }
 
-        if ($mView == 'item') {
-            $id = str_replace('/', urlencode('%2F'), $id);
+        if ($mId != $id) {
+            if ($view == 'item') {
+                JTable::addIncludePath(JPATH_ROOT."/administrator/components/com_jcar/tables");
+                $table = JTable::getInstance('Route', 'JCarTable');
 
-            JTable::addIncludePath(JPATH_ROOT."/administrator/components/com_jcar/tables");
-            $table = JTable::getInstance('Route', 'JCarTable');
-
-            if ($table->load(['item_id'=>$id])) {
-                $segments[] = $table->alias;
+                if ($table->load(['item_id'=>$id])) {
+                    $segments[] = $table->alias;
+                } else {
+                    $segments[] = str_replace('/', urlencode('%2F'), $id);
+                }
             } else {
-                $segments[] = $id;
+                $segments[] = str_replace('/', urlencode('%2F'), $id);
             }
 
             unset($query['id']);

@@ -122,7 +122,7 @@ class JCarModelItem extends JModelItem
         $titles = JArrayHelper::getValue($metadata, "dc.title", []);
         $title = reset($titles);
 
-        $isNew = false;
+        $isNewRoute = false;
         $count = 0;
         $suffix = "";
 
@@ -130,7 +130,11 @@ class JCarModelItem extends JModelItem
         do {
             $unique = true;
 
-            $alias = JApplicationHelper::stringURLSafe($title.$suffix);
+            if ($suffix) {
+                $title .= " ".$suffix;
+            }
+
+            $alias = JApplicationHelper::stringURLSafe($title);
 
             $table = $model->getTable('Route');
 
@@ -138,6 +142,7 @@ class JCarModelItem extends JModelItem
                 if ($table->item_id !== $this->getState('item.id')) {
                     $dates = JArrayHelper::getValue($metadata, "dc.date.issued", []);
 
+                    // try to make uniue with date otherwise just start incrementing the suffix.
                     if (($issued = array_pop($dates)) && !$count) {
                         $suffix = $issued;
                     } else {
@@ -148,16 +153,16 @@ class JCarModelItem extends JModelItem
                     $unique = false;
                 }
             } else {
-                $isNew = true;
+                $isNewRoute = true;
             }
         } while (!$unique);
 
-        if (!$isNew) {
+        if (!$isNewRoute) {
             return false;
         }
 
         $data = [
-            "title"=>$title.$suffix,
+            "title"=>$title,
             "alias"=>$alias,
             "item_id"=>$this->getState('item.id'),
             "state"=>1,
