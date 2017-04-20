@@ -31,8 +31,6 @@ JFactory::getDocument()
 JLoader::register(
     'JCarHelper',
     JPATH_ROOT.'/administrator/components/com_jcar/helpers/jcar.php');
-
-    echo JRoute::_("index.php?option=com_jcar&view=item&id=dspace:21");
 ?>
 <section id="jcarItem">
     <header>
