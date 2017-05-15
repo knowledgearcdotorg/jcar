@@ -13,6 +13,10 @@ defined('_JEXEC') or die;
  */
 class JCarModelItem extends JModelItem
 {
+    const TITLE_MAX_LENGTH = 254;
+
+    const ALIAS_MAX_LENGTH = 190;
+
     protected $item;
 
     public function __construct($config = array())
@@ -102,8 +106,7 @@ class JCarModelItem extends JModelItem
      * By referencing the JCar item using a menu item, Joomla will be able to
      * generate a search engine-friendly url.
      *
-     * @return  mixed  The menu item id if a menu item is generated, or false
-     * if the menu item already exists.
+     * @return  mixed  A url based on the alias or , or false if there is an error.
      */
     public function generateSefRoute()
     {
@@ -130,11 +133,18 @@ class JCarModelItem extends JModelItem
         do {
             $unique = true;
 
-            if ($suffix) {
-                $title .= " ".$suffix;
+            $urlSafeSuffix = JApplicationHelper::stringURLSafe($suffix);
+
+            // increment by one to represent the "-" in the suffix when there is a suffix.
+            if (($urlSafeSuffixLength = strlen($urlSafeSuffix)) > 0) {
+                $urlSafeSuffixLength++;
             }
 
-            $alias = JApplicationHelper::stringURLSafe($title);
+            $alias = substr(JApplicationHelper::stringURLSafe($title), 0, self::ALIAS_MAX_LENGTH - $urlSafeSuffixLength);
+
+            if ($urlSafeSuffix) {
+                $alias .= "-".$urlSafeSuffix;
+            }
 
             $table = $model->getTable('Route');
 
@@ -157,23 +167,32 @@ class JCarModelItem extends JModelItem
             }
         } while (!$unique);
 
-        if (!$isNewRoute) {
-            return false;
+        if ($isNewRoute) {
+            // increment by one to represent the " " in the suffix when there is a suffix.
+            if (($suffixLength = strlen($suffix)) > 0) {
+                $suffixLength++;
+            }
+
+            $title = substr($title, 0, self::TITLE_MAX_LENGTH - $suffixLength);
+
+            if ($suffix) {
+                $title .= " ".$suffix;
+            }
+
+            $data = [
+                "title"=>$title,
+                "alias"=>$alias,
+                "item_id"=>$this->getState('item.id'),
+                "state"=>1,
+                "language"=>'*'
+            ];
+
+            if (!$model->save($data)) {
+                throw new Exception($model->getError());
+                return false;
+            }
         }
 
-        $data = [
-            "title"=>$title,
-            "alias"=>$alias,
-            "item_id"=>$this->getState('item.id'),
-            "state"=>1,
-            "language"=>'*'
-        ];
-
-        if (!$model->save($data)) {
-            throw new Exception($model->getError());
-            return false;
-        }
-
-        return JCarHelperRoute::getItemRoute($model->getItem()->item_id);
+        return JCarHelperRoute::getItemRoute($this->getState('item.id'));
     }
 }

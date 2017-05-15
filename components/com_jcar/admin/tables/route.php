@@ -51,30 +51,6 @@ class JCarTableRoute extends JTable
             return false;
         }
 
-        // Generate a valid alias
-        $this->generateAlias();
-
         return true;
-    }
-
-    /**
-     * Generate a valid alias from title / date.
-     * Remains public to be able to check for duplicated alias before saving
-     *
-     * @return  string
-     */
-    public function generateAlias()
-    {
-        if (empty($this->alias)) {
-            $this->alias = $this->title;
-        }
-
-        $this->alias = JApplicationHelper::stringURLSafe($this->alias, $this->language);
-
-        if (trim(str_replace('-', '', $this->alias)) == '') {
-            $this->alias = JFactory::getDate()->format("Y-m-d-H-i-s");
-        }
-
-        return $this->alias;
     }
 }

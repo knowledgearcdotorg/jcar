@@ -128,8 +128,6 @@ class JCarModelRoute extends JModelAdmin
 
         $table->title = htmlspecialchars_decode($table->title, ENT_QUOTES);
 
-        $table->generateAlias();
-
         if (empty($table->id)) {
             $table->created = $date;
         } else {
