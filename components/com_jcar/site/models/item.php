@@ -100,13 +100,20 @@ class JCarModelItem extends JModelItem
         return JArrayHelper::getValue($this->item, $pk);
     }
 
+    public function doesRouteExist()
+    {
+
+    }
+
     /**
      * Generates a menu item based on the JCar item's title.
      *
      * By referencing the JCar item using a menu item, Joomla will be able to
      * generate a search engine-friendly url.
      *
-     * @return  mixed  A url based on the alias or , or false if there is an error.
+     * @return  mixed      A url based on the alias or false if no url is generated.
+     *
+     * @throw   Exception  If the new route cannot be saved.
      */
     public function generateSefRoute()
     {
@@ -122,9 +129,16 @@ class JCarModelItem extends JModelItem
         $item = $this->getItem();
 
         $metadata = $item->metadata;
+
         $titles = JArrayHelper::getValue($metadata, "dc.title", []);
         $title = reset($titles);
 
+        $dates = JArrayHelper::getValue($metadata, "dc.date.issued", []);
+
+        if ($dates) {
+            $issued = reset($dates);
+        }
+        
         $isNewRoute = false;
         $count = 0;
         $suffix = "";
@@ -150,15 +164,18 @@ class JCarModelItem extends JModelItem
 
             if ($table->load(["alias"=>$alias])) {
                 if ($table->item_id !== $this->getState('item.id')) {
-                    $dates = JArrayHelper::getValue($metadata, "dc.date.issued", []);
-
-                    // try to make uniue with date otherwise just start incrementing the suffix.
-                    if (($issued = array_pop($dates)) && !$count) {
-                        $suffix = $issued;
+                    // try to make unique with date otherwise just start incrementing the suffix.
+                    if ($issued) {
+                        if ($count) {
+                            $suffix .= " ".$count;
+                        } else {
+                            $suffix = $issued;
+                        }
                     } else {
-                        $count++;
                         $suffix = $count;
                     }
+
+                    $count++;
 
                     $unique = false;
                 }
@@ -189,10 +206,11 @@ class JCarModelItem extends JModelItem
 
             if (!$model->save($data)) {
                 throw new Exception($model->getError());
-                return false;
             }
+
+            return JCarHelperRoute::getItemRoute($this->getState('item.id'));
         }
 
-        return JCarHelperRoute::getItemRoute($this->getState('item.id'));
+        return false;
     }
 }

@@ -13,30 +13,13 @@ defined('_JEXEC') or die;
  */
 class JCarController extends JControllerLegacy
 {
-    public function testSef()
-    {
-            $model = $this->getModel('item', 'jcarmodel', ['ignore_request'=>true]);
-            $model->setState("item.id", "dspace:20");
-echo "<br/>";
-            if ($url = $model->generateSefRoute()) {
-                echo 'url=.'.JRoute::_($url);
-            }
-echo "<br/>";
-            $model->setState("item.id", "dspace:21");
-
-            if ($url = $model->generateSefRoute()) {
-                echo 'url=.'.JRoute::_($url);
-            }
-echo "<br/>";
-    }
-
     public function display($cachable = false, $urlparams = array())
     {
         if (JFactory::getApplication()->input->getCmd('view') == 'item') {
             $model = $this->getModel('item');
 
-            if ($url = $model->generateSefRoute()) {
-                $this->setRedirect(JRoute::_($url));
+            if (!$model->doesRouteExist()) {
+                $this->setRedirect(JRoute::_($model->generateSefRoute()));
             }
         }
 
