@@ -16,6 +16,7 @@ $user      = JFactory::getUser();
 $userId    = $user->get('id');
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
+
 $saveOrder = $listOrder == 'a.id';
 
 if ($saveOrder) {
@@ -32,14 +33,8 @@ if ($saveOrder) {
     <?php else : ?>
     <div id="j-main-container">
     <?php endif;?>
-
-        <div class="js-stools clearfix">
-            <div class="clearfix">
-                <div class="js-stools-container-list hidden-phone hidden-tablet shown">
-                    <?php echo JLayoutHelper::render('joomla.searchtools.default.filters', array('view'=>$this)); ?>
-                </div>
-            </div>
-        </div>
+    
+        <?php echo JLayoutHelper::render('joomla.searchtools.default', array('view'=>$this)); ?>
 
         <?php if (empty($this->items)) : ?>
         <div class="alert alert-no-items">
@@ -55,7 +50,7 @@ if ($saveOrder) {
                             <?php echo JHtml::_('grid.checkall'); ?>
                         </th>
                         <th class="nowrap">
-                            <?php echo JText::_('JGLOBAL_TITLE'); ?>
+                            <?php echo JHtml::_('searchtools.sort', 'JGLOBAL_TITLE', 'a.title', $listDirn, $listOrder); ?>
                         </th>
                         <th width="1%" class="nowrap hidden-phone">
                             <?php echo JHtml::_('searchtools.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
