@@ -21,6 +21,13 @@ class JCarViewRoutes extends JViewLegacy
     protected $items;
 
     /**
+     * An instance of the JPagination class.
+     *
+     * @var  JPagination
+     */
+    protected $pagination;
+
+    /**
      * The model state
      *
      * @var  object
@@ -51,6 +58,7 @@ class JCarViewRoutes extends JViewLegacy
     public function display($tpl = null)
     {
         $this->items = $this->get('Items');
+        $this->pagination = $this->get('Pagination');
         $this->state = $this->get('State');
         $this->filterForm = $this->get('FilterForm');
         $this->activeFilters = $this->get('ActiveFilters');

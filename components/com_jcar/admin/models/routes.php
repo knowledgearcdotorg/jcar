@@ -47,15 +47,15 @@ class JCarModelRoutes extends JModelList
             )
         );
 
-        $query->from($db->quoteName('#__jcar_routes', 'a'));
+        $query->from($db->qn('#__jcar_routes', 'a'));
 
         // Filter by state state
         $state = $this->getState('filter.state');
 
         if (is_numeric($state)) {
-            $query->where($db->quoteName('a.state').' = '.(int)$state);
+            $query->where($db->qn('a.state').' = '.(int)$state);
         } elseif ($state === '') {
-            $query->where('('.$db->quoteName('a.state').' = 0 OR '.$db->quoteName('a.state').' = 1)');
+            $query->where($db->qn('a.state').' IN (0, 1)');
         }
 
         return $query;

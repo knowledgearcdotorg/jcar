@@ -115,6 +115,14 @@ if ($saveOrder) {
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
+
+                <tfoot>
+                    <tr>
+                        <td colspan="10">
+                        <?php echo $this->pagination->getListFooter(); ?>
+                        </td>
+                    </tr>
+                </tfoot>
             </table>
         <?php endif;?>
         <input type="hidden" name="task" value="" />
