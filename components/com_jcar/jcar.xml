@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<extension type="component" version="3.3" method="upgrade">
+<extension type="component" version="3.6" method="upgrade">
     <name>com_jcar</name>
-    <creationDate>2017-05-22</creationDate>
+    <creationDate>2017-05-25</creationDate>
     <author>KnowledgeArc</author>
     <authorEmail>development@knowledgearc.com</authorEmail>
     <authorUrl>http://www.knowledgearc.org</authorUrl>
     <copyright>>Copyright (C) 2015-2017 KnowledgeArc Ltd. All rights reserved.</copyright>
     <license>http://www.gnu.org/licenses/gpl-3.0.html</license>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
     <description>COM_JCAR_XML_DESCRIPTION</description>
 
     <install>

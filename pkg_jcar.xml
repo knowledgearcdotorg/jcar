@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<extension type="package" version="3.4" method="upgrade">
+<extension type="package" version="3.6" method="upgrade">
     <name>JCAR Package</name>
     <author>KnowledgeArc Ltd</author>
-    <creationDate>2017-05-22</creationDate>
+    <creationDate>2017-05-25</creationDate>
     <packagename>jcar</packagename>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
     <copyright>>Copyright (C) 2015-2017 KnowledgeArc Ltd. All rights reserved.</copyright>
     <license>http://www.gnu.org/licenses/gpl-3.0.html</license>
     <packager>KnowledgeArc Ltd</packager>

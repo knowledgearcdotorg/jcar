@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<extension version="3.3" type="plugin" group="jcar" method="upgrade">
+<extension version="3.6" type="plugin" group="jcar" method="upgrade">
     <name>plg_jcar_oai</name>
     <author>KnowledgeArc</author>
     <creationDate>2016-07-08</creationDate>
