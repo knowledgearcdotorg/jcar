@@ -116,7 +116,7 @@ class JCarRouter extends JComponentRouterBase
             $mView = JArrayHelper::getValue($item->query, 'view');
             $mLayout = JArrayHelper::getValue($item->query, 'layout');
 
-            if (($mView == "categories" || $mView == "item") && count($segments) == 1) {
+            if (($mView == "categories" || $mView == "category" || $mView == "item") && count($segments) == 1) {
                 $vars['view'] = ($mView == "categories") ? "category" : $mView;
                 $vars['layout'] = $mLayout;
             } else {
